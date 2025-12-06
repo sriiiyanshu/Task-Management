@@ -14,14 +14,14 @@ import api from "./api";
  */
 export const getTasks = async (filters = {}) => {
   const params = new URLSearchParams();
-  
+
   if (filters.status) params.append("status", filters.status);
   if (filters.priority) params.append("priority", filters.priority);
   if (filters.search) params.append("search", filters.search);
-  
+
   const queryString = params.toString();
   const url = queryString ? `/api/tasks?${queryString}` : "/api/tasks";
-  
+
   return api.get(url);
 };
 

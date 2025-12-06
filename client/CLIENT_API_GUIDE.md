@@ -9,9 +9,11 @@ The Next.js client is now configured with a complete API integration layer.
 ## 📁 Files Created
 
 ### 1. **`src/utils/api.js`**
+
 Axios instance with automatic authentication
 
 **Features:**
+
 - Base URL from environment variable
 - Automatic `Authorization: Bearer <token>` header
 - Request/response interceptors
@@ -20,9 +22,11 @@ Axios instance with automatic authentication
 - 10-second timeout
 
 ### 2. **`src/utils/auth.js`**
+
 Authentication helper functions
 
 **Functions:**
+
 - `setToken(token)` - Save JWT to localStorage
 - `getToken()` - Get JWT from localStorage
 - `removeToken()` - Clear JWT
@@ -32,9 +36,11 @@ Authentication helper functions
 - `isTokenExpired()` - Check if token expired
 
 ### 3. **`src/utils/taskApi.js`**
+
 Task API service functions
 
 **Functions:**
+
 - `getTasks(filters)` - Get all tasks with filtering
 - `getTask(id)` - Get single task
 - `createTask(taskData)` - Create new task
@@ -44,12 +50,15 @@ Task API service functions
 - `logout()` - Logout
 
 ### 4. **`.env.local`**
+
 Environment configuration
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
 ### 5. **`.env.example`**
+
 Template for other developers
 
 ---
@@ -105,26 +114,26 @@ headers: {
 
 ```javascript
 // pages/auth/success.js
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { setToken } from '@/utils/auth';
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { setToken } from "@/utils/auth";
 
 export default function AuthSuccess() {
   const router = useRouter();
-  
+
   useEffect(() => {
     // Get token from URL query parameter
     const { token } = router.query;
-    
+
     if (token) {
       // Save token to localStorage
       setToken(token);
-      
+
       // Redirect to dashboard
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [router]);
-  
+
   return <div>Loading...</div>;
 }
 ```
@@ -133,84 +142,74 @@ export default function AuthSuccess() {
 
 ```javascript
 // pages/dashboard.js
-import { useState, useEffect } from 'react';
-import { getTasks } from '@/utils/taskApi';
+import { useState, useEffect } from "react";
+import { getTasks } from "@/utils/taskApi";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const response = await getTasks();
         setTasks(response.data.tasks);
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error("Error fetching tasks:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchTasks();
   }, []);
-  
-  return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        tasks.map(task => (
-          <div key={task.id}>{task.title}</div>
-        ))
-      )}
-    </div>
-  );
+
+  return <div>{loading ? <p>Loading...</p> : tasks.map((task) => <div key={task.id}>{task.title}</div>)}</div>;
 }
 ```
 
 ### 3. Filtering Tasks
 
 ```javascript
-import { getTasks } from '@/utils/taskApi';
+import { getTasks } from "@/utils/taskApi";
 
 // Filter by status
-const response = await getTasks({ status: 'To Do' });
+const response = await getTasks({ status: "To Do" });
 
 // Filter by priority
-const response = await getTasks({ priority: 'High' });
+const response = await getTasks({ priority: "High" });
 
 // Search tasks
-const response = await getTasks({ search: 'meeting' });
+const response = await getTasks({ search: "meeting" });
 
 // Combine filters
 const response = await getTasks({
-  status: 'In Progress',
-  priority: 'High',
-  search: 'project'
+  status: "In Progress",
+  priority: "High",
+  search: "project",
 });
 ```
 
 ### 4. Creating a Task
 
 ```javascript
-import { createTask } from '@/utils/taskApi';
+import { createTask } from "@/utils/taskApi";
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  
+
   try {
     const response = await createTask({
-      title: 'Complete project',
-      description: 'Finish the task tracker app',
-      priority: 'High',
-      status: 'To Do',
-      dueDate: '2025-12-15T00:00:00.000Z'
+      title: "Complete project",
+      description: "Finish the task tracker app",
+      priority: "High",
+      status: "To Do",
+      dueDate: "2025-12-15T00:00:00.000Z",
     });
-    
-    console.log('Task created:', response.data.task);
+
+    console.log("Task created:", response.data.task);
   } catch (error) {
-    console.error('Error:', error.response?.data?.message);
+    console.error("Error:", error.response?.data?.message);
   }
 };
 ```
@@ -218,17 +217,17 @@ const handleSubmit = async (e) => {
 ### 5. Updating a Task
 
 ```javascript
-import { updateTask } from '@/utils/taskApi';
+import { updateTask } from "@/utils/taskApi";
 
 const handleStatusChange = async (taskId, newStatus) => {
   try {
     const response = await updateTask(taskId, {
-      status: newStatus
+      status: newStatus,
     });
-    
-    console.log('Task updated:', response.data.task);
+
+    console.log("Task updated:", response.data.task);
   } catch (error) {
-    console.error('Error:', error.response?.data?.message);
+    console.error("Error:", error.response?.data?.message);
   }
 };
 ```
@@ -236,15 +235,15 @@ const handleStatusChange = async (taskId, newStatus) => {
 ### 6. Deleting a Task
 
 ```javascript
-import { deleteTask } from '@/utils/taskApi';
+import { deleteTask } from "@/utils/taskApi";
 
 const handleDelete = async (taskId) => {
-  if (confirm('Are you sure you want to delete this task?')) {
+  if (confirm("Are you sure you want to delete this task?")) {
     try {
       await deleteTask(taskId);
-      console.log('Task deleted');
+      console.log("Task deleted");
     } catch (error) {
-      console.error('Error:', error.response?.data?.message);
+      console.error("Error:", error.response?.data?.message);
     }
   }
 };
@@ -253,27 +252,27 @@ const handleDelete = async (taskId) => {
 ### 7. Logout
 
 ```javascript
-import { useRouter } from 'next/router';
-import { removeToken } from '@/utils/auth';
+import { useRouter } from "next/router";
+import { removeToken } from "@/utils/auth";
 
 const handleLogout = () => {
   // Remove token from localStorage
   removeToken();
-  
+
   // Redirect to login page
-  router.push('/login');
+  router.push("/login");
 };
 ```
 
 ### 8. Check Authentication
 
 ```javascript
-import { isAuthenticated, isTokenExpired } from '@/utils/auth';
+import { isAuthenticated, isTokenExpired } from "@/utils/auth";
 
 // In a component or page
 useEffect(() => {
   if (!isAuthenticated() || isTokenExpired()) {
-    router.push('/login');
+    router.push("/login");
   }
 }, []);
 ```
@@ -281,10 +280,10 @@ useEffect(() => {
 ### 9. Get Current User Info
 
 ```javascript
-import { getUserFromToken } from '@/utils/auth';
+import { getUserFromToken } from "@/utils/auth";
 
 const user = getUserFromToken();
-console.log('User:', user);
+console.log("User:", user);
 // Output: { id: 1, email: 'user@example.com', name: 'John Doe' }
 ```
 
@@ -302,17 +301,17 @@ import { isAuthenticated, isTokenExpired } from '@/utils/auth';
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
-  
+
   useEffect(() => {
     if (!isAuthenticated() || isTokenExpired()) {
       router.push('/login');
     }
   }, [router]);
-  
+
   if (!isAuthenticated()) {
     return <div>Loading...</div>;
   }
-  
+
   return children;
 }
 
@@ -331,6 +330,7 @@ export default function Dashboard() {
 ## 🚀 Running the Client
 
 ### Development Mode
+
 ```bash
 cd client
 npm run dev
@@ -339,6 +339,7 @@ npm run dev
 **Server runs on:** `http://localhost:3000`
 
 ### Build for Production
+
 ```bash
 npm run build
 npm start
@@ -349,11 +350,13 @@ npm start
 ## 🌐 Environment Variables
 
 ### Development (`.env.local`)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
 ### Production
+
 ```env
 NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 ```
@@ -365,6 +368,7 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 ## 📊 API Response Handling
 
 ### Success Response
+
 ```javascript
 {
   success: true,
@@ -374,6 +378,7 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 ```
 
 ### Error Response
+
 ```javascript
 {
   success: false,
@@ -383,6 +388,7 @@ NEXT_PUBLIC_API_URL=https://your-backend-domain.com
 ```
 
 ### Handling in Component
+
 ```javascript
 try {
   const response = await getTasks();
@@ -393,7 +399,7 @@ try {
     console.error(error.response.data.message);
   } else {
     // Network error
-    console.error('Network error');
+    console.error("Network error");
   }
 }
 ```
@@ -403,6 +409,7 @@ try {
 ## 🧪 Testing the Setup
 
 ### 1. Start Backend
+
 ```bash
 cd server
 npm run dev
@@ -410,6 +417,7 @@ npm run dev
 ```
 
 ### 2. Start Frontend
+
 ```bash
 cd client
 npm run dev
@@ -417,21 +425,23 @@ npm run dev
 ```
 
 ### 3. Test API Connection
+
 Create a test page at `pages/test-api.js`:
 
 ```javascript
-import { useEffect, useState } from 'react';
-import api from '@/utils/api';
+import { useEffect, useState } from "react";
+import api from "@/utils/api";
 
 export default function TestAPI() {
-  const [status, setStatus] = useState('Testing...');
-  
+  const [status, setStatus] = useState("Testing...");
+
   useEffect(() => {
-    api.get('/health')
-      .then(res => setStatus('✅ API Connected!'))
-      .catch(err => setStatus('❌ API Connection Failed'));
+    api
+      .get("/health")
+      .then((res) => setStatus("✅ API Connected!"))
+      .catch((err) => setStatus("❌ API Connection Failed"));
   }, []);
-  
+
   return <h1>{status}</h1>;
 }
 ```
@@ -456,12 +466,14 @@ Visit: `http://localhost:3000/test-api`
 ## 🎯 Next Steps
 
 1. **Create Pages:**
+
    - `/login` - Login page with Google OAuth button
    - `/auth/success` - Handle OAuth callback & token
    - `/dashboard` - Main task dashboard
    - `/tasks/[id]` - Single task view
 
 2. **Create Components:**
+
    - `TaskList` - Display tasks
    - `TaskCard` - Individual task
    - `TaskForm` - Create/edit tasks
@@ -481,10 +493,10 @@ Visit: `http://localhost:3000/test-api`
 ```json
 {
   "scripts": {
-    "dev": "next dev",           // Runs on port 3000 by default
-    "build": "next build",       // Build for production
-    "start": "next start",       // Start production server
-    "lint": "eslint"             // Run linter
+    "dev": "next dev", // Runs on port 3000 by default
+    "build": "next build", // Build for production
+    "start": "next start", // Start production server
+    "lint": "eslint" // Run linter
   }
 }
 ```

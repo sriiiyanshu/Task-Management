@@ -15,12 +15,12 @@ api.interceptors.request.use(
     // Get token from localStorage (client-side only)
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
-      
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-    
+
     return config;
   },
   (error) => {
@@ -39,7 +39,7 @@ api.interceptors.response.use(
       // Clear token and redirect to login
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
-        
+
         // Redirect to login if not already there
         if (window.location.pathname !== "/login") {
           window.location.href = "/login";
