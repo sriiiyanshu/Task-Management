@@ -9,6 +9,7 @@ Complete CRUD API for task management with JWT authentication and ownership veri
 ## 🔐 Authentication
 
 All task endpoints require JWT authentication via the `Authorization` header:
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
@@ -19,29 +20,32 @@ Authorization: Bearer <your-jwt-token>
 
 ### Base URL: `/api/tasks`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/tasks` | Get all tasks (with filtering) |
-| `GET` | `/api/tasks/:id` | Get single task by ID |
-| `POST` | `/api/tasks` | Create new task |
-| `PUT` | `/api/tasks/:id` | Update task |
-| `DELETE` | `/api/tasks/:id` | Delete task |
+| Method   | Endpoint         | Description                    |
+| -------- | ---------------- | ------------------------------ |
+| `GET`    | `/api/tasks`     | Get all tasks (with filtering) |
+| `GET`    | `/api/tasks/:id` | Get single task by ID          |
+| `POST`   | `/api/tasks`     | Create new task                |
+| `PUT`    | `/api/tasks/:id` | Update task                    |
+| `DELETE` | `/api/tasks/:id` | Delete task                    |
 
 ---
 
 ## 📖 Endpoint Details
 
 ### 1. Get All Tasks
+
 **`GET /api/tasks`**
 
 Fetch all tasks for the authenticated user with optional filtering and search.
 
 **Query Parameters:**
+
 - `status` (optional) - Filter by status: `To Do`, `In Progress`, `Done`
 - `priority` (optional) - Filter by priority: `Low`, `Medium`, `High`
 - `search` (optional) - Search in title and description (case-insensitive)
 
 **Examples:**
+
 ```bash
 # Get all tasks
 curl -H "Authorization: Bearer $TOKEN" \
@@ -61,6 +65,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -84,17 +89,20 @@ curl -H "Authorization: Bearer $TOKEN" \
 ---
 
 ### 2. Get Single Task
+
 **`GET /api/tasks/:id`**
 
 Fetch a specific task by ID. Only the task owner can view it.
 
 **Examples:**
+
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
   http://localhost:8080/api/tasks/1
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -113,26 +121,31 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```
 
 **Error Responses:**
+
 - `404` - Task not found
 - `403` - Not the task owner
 
 ---
 
 ### 3. Create Task
+
 **`POST /api/tasks`**
 
 Create a new task for the authenticated user.
 
 **Required Fields:**
+
 - `title` (string) - Task title
 
 **Optional Fields:**
+
 - `description` (string) - Task description
 - `dueDate` (ISO 8601 date string) - Due date
 - `priority` (string) - `Low`, `Medium`, or `High` (default: `Medium`)
 - `status` (string) - `To Do`, `In Progress`, or `Done` (default: `To Do`)
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer $TOKEN" \
@@ -148,6 +161,7 @@ curl -X POST \
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "success": true,
@@ -167,6 +181,7 @@ curl -X POST \
 ```
 
 **Error Responses:**
+
 - `400` - Missing or invalid title
 - `400` - Invalid priority value
 - `400` - Invalid status value
@@ -175,11 +190,13 @@ curl -X POST \
 ---
 
 ### 4. Update Task
+
 **`PUT /api/tasks/:id`**
 
 Update an existing task. Only the task owner can update it.
 
 **Optional Fields:**
+
 - `title` (string)
 - `description` (string)
 - `dueDate` (ISO 8601 date string)
@@ -187,6 +204,7 @@ Update an existing task. Only the task owner can update it.
 - `status` (string) - `To Do`, `In Progress`, or `Done`
 
 **Example:**
+
 ```bash
 curl -X PUT \
   -H "Authorization: Bearer $TOKEN" \
@@ -199,6 +217,7 @@ curl -X PUT \
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -218,6 +237,7 @@ curl -X PUT \
 ```
 
 **Error Responses:**
+
 - `400` - Invalid task ID
 - `404` - Task not found
 - `403` - Not the task owner
@@ -226,11 +246,13 @@ curl -X PUT \
 ---
 
 ### 5. Delete Task
+
 **`DELETE /api/tasks/:id`**
 
 Delete a task. Only the task owner can delete it.
 
 **Example:**
+
 ```bash
 curl -X DELETE \
   -H "Authorization: Bearer $TOKEN" \
@@ -238,6 +260,7 @@ curl -X DELETE \
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -246,6 +269,7 @@ curl -X DELETE \
 ```
 
 **Error Responses:**
+
 - `400` - Invalid task ID
 - `404` - Task not found
 - `403` - Not the task owner
@@ -264,23 +288,25 @@ curl -X DELETE \
 
 ### 🔒 Access Control
 
-| Action | Rule |
-|--------|------|
-| View task | Must be task owner |
+| Action      | Rule                  |
+| ----------- | --------------------- |
+| View task   | Must be task owner    |
 | Create task | Must be authenticated |
-| Update task | Must be task owner |
-| Delete task | Must be task owner |
+| Update task | Must be task owner    |
+| Delete task | Must be task owner    |
 
 ---
 
 ## 📊 Valid Field Values
 
 ### Priority
+
 - `Low`
 - `Medium` (default)
 - `High`
 
 ### Status
+
 - `To Do` (default)
 - `In Progress`
 - `Done`
@@ -290,6 +316,7 @@ curl -X DELETE \
 ## 🧪 Testing with cURL
 
 ### Setup
+
 ```bash
 # 1. Login and get token
 # Visit: http://localhost:8080/auth/google
@@ -300,6 +327,7 @@ TOKEN="your-jwt-token-here"
 ```
 
 ### Test CRUD Operations
+
 ```bash
 # Create a task
 curl -X POST \
@@ -330,6 +358,7 @@ curl -X DELETE \
 ```
 
 ### Test Filtering
+
 ```bash
 # Filter by status
 curl -H "Authorization: Bearer $TOKEN" \
@@ -353,6 +382,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ## ❌ Error Response Format
 
 All errors follow this format:
+
 ```json
 {
   "success": false,
@@ -362,6 +392,7 @@ All errors follow this format:
 ```
 
 ### Common Error Types
+
 - `ValidationError` - Invalid input data
 - `NotFound` - Resource not found
 - `Forbidden` - Insufficient permissions
@@ -374,16 +405,16 @@ All errors follow this format:
 
 ```javascript
 // API client setup
-const API_URL = 'http://localhost:8080/api/tasks';
-const token = localStorage.getItem('token');
+const API_URL = "http://localhost:8080/api/tasks";
+const token = localStorage.getItem("token");
 
 // Get all tasks
 async function getTasks(filters = {}) {
   const params = new URLSearchParams(filters);
   const response = await fetch(`${API_URL}?${params}`, {
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 }
@@ -391,12 +422,12 @@ async function getTasks(filters = {}) {
 // Create task
 async function createTask(taskData) {
   const response = await fetch(API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(taskData)
+    body: JSON.stringify(taskData),
   });
   return response.json();
 }
@@ -404,12 +435,12 @@ async function createTask(taskData) {
 // Update task
 async function updateTask(id, updates) {
   const response = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(updates)
+    body: JSON.stringify(updates),
   });
   return response.json();
 }
@@ -417,10 +448,10 @@ async function updateTask(id, updates) {
 // Delete task
 async function deleteTask(id) {
   const response = await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 }
@@ -431,6 +462,7 @@ async function deleteTask(id) {
 ## ✅ API Complete!
 
 The Task API is fully functional with:
+
 - ✅ Full CRUD operations
 - ✅ JWT authentication on all endpoints
 - ✅ Ownership verification

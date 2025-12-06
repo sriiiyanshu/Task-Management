@@ -9,23 +9,27 @@ A complete **Task CRUD API** with full authentication and security features.
 ## 📦 Files Created
 
 ### 1. **`src/routes/tasks.js`**
+
 Complete task management routes with 5 endpoints:
 
-| Endpoint | Method | Description | Auth Required |
-|----------|--------|-------------|---------------|
-| `/api/tasks` | GET | Get all user's tasks (with filters) | ✅ Yes |
-| `/api/tasks/:id` | GET | Get single task | ✅ Yes |
-| `/api/tasks` | POST | Create new task | ✅ Yes |
-| `/api/tasks/:id` | PUT | Update task | ✅ Yes |
-| `/api/tasks/:id` | DELETE | Delete task | ✅ Yes |
+| Endpoint         | Method | Description                         | Auth Required |
+| ---------------- | ------ | ----------------------------------- | ------------- |
+| `/api/tasks`     | GET    | Get all user's tasks (with filters) | ✅ Yes        |
+| `/api/tasks/:id` | GET    | Get single task                     | ✅ Yes        |
+| `/api/tasks`     | POST   | Create new task                     | ✅ Yes        |
+| `/api/tasks/:id` | PUT    | Update task                         | ✅ Yes        |
+| `/api/tasks/:id` | DELETE | Delete task                         | ✅ Yes        |
 
 ### 2. **`src/server.js`** (Updated)
+
 - Imported task routes
 - Mounted at `/api/tasks` with `authenticateJWT` middleware
 - All task endpoints are now protected
 
 ### 3. **`TASKS_API.md`**
+
 Comprehensive documentation with:
+
 - All endpoint details
 - Request/response examples
 - cURL test commands
@@ -37,15 +41,18 @@ Comprehensive documentation with:
 ## 🔐 Security Features Implemented
 
 ### ✅ Authentication
+
 - All endpoints require valid JWT token
 - Token verified via `Authorization: Bearer <token>` header
 
 ### ✅ Authorization (Ownership Verification)
+
 - Users can ONLY access their own tasks
 - GET, UPDATE, DELETE verify `task.userId === req.user.id`
 - Automatic filtering: tasks fetched with `where: { userId }`
 
 ### ✅ Input Validation
+
 - **Title required** on create
 - **Priority validation**: Must be `Low`, `Medium`, or `High`
 - **Status validation**: Must be `To Do`, `In Progress`, or `Done`
@@ -53,6 +60,7 @@ Comprehensive documentation with:
 - **Date validation**: Validates ISO 8601 format
 
 ### ✅ Error Handling
+
 - Consistent error response format
 - Specific error types: `ValidationError`, `NotFound`, `Forbidden`, `ServerError`
 - Detailed error messages for debugging
@@ -62,6 +70,7 @@ Comprehensive documentation with:
 ## 🔍 Advanced Features
 
 ### Filtering & Search
+
 ```bash
 # Filter by status
 GET /api/tasks?status=To Do
@@ -77,14 +86,15 @@ GET /api/tasks?status=In Progress&priority=High&search=project
 ```
 
 ### Task Fields
+
 ```json
 {
   "id": 1,
   "title": "Complete project",
   "description": "Write documentation",
   "dueDate": "2025-12-15T00:00:00.000Z",
-  "priority": "High",          // Low, Medium, High
-  "status": "In Progress",     // To Do, In Progress, Done
+  "priority": "High", // Low, Medium, High
+  "status": "In Progress", // To Do, In Progress, Done
   "userId": 1,
   "createdAt": "2025-12-07T10:30:00.000Z",
   "updatedAt": "2025-12-07T10:30:00.000Z"
@@ -132,6 +142,7 @@ curl -X DELETE \
 ## 📊 API Status
 
 ### ✅ Backend Complete
+
 - [x] Server setup (Express + CORS)
 - [x] Database (PostgreSQL + Prisma)
 - [x] Authentication (Google OAuth + JWT)
@@ -141,6 +152,7 @@ curl -X DELETE \
 - [x] Filtering & search
 
 ### 🎯 Ready For
+
 - Frontend development (Next.js)
 - User interface (task cards, filters, forms)
 - Deployment (Google App Engine)
@@ -196,7 +208,9 @@ CLIENT_URL="http://localhost:3000"
 ## 🎉 What's Next?
 
 ### Option 1: Build the Frontend
+
 Create the Next.js client with:
+
 - Login page with Google OAuth button
 - Dashboard with task list
 - Task creation/editing forms
@@ -204,9 +218,11 @@ Create the Next.js client with:
 - Tailwind CSS styling
 
 ### Option 2: Test the API
+
 Use the provided cURL commands to test all endpoints
 
 ### Option 3: Deploy
+
 Deploy to Google App Engine using the provided `app.yaml`
 
 ---

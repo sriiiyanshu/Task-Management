@@ -33,10 +33,7 @@ router.get("/", async (req, res) => {
 
     // Add search filter if provided (searches in title and description)
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ];
+      where.OR = [{ title: { contains: search, mode: "insensitive" } }, { description: { contains: search, mode: "insensitive" } }];
     }
 
     // Fetch tasks with filters
@@ -205,10 +202,8 @@ router.put("/:id", async (req, res) => {
     // Build update data (only include provided fields)
     const updateData = {};
     if (title !== undefined) updateData.title = title.trim();
-    if (description !== undefined)
-      updateData.description = description?.trim() || null;
-    if (dueDate !== undefined)
-      updateData.dueDate = dueDate ? new Date(dueDate) : null;
+    if (description !== undefined) updateData.description = description?.trim() || null;
+    if (dueDate !== undefined) updateData.dueDate = dueDate ? new Date(dueDate) : null;
     if (priority !== undefined) updateData.priority = priority;
     if (status !== undefined) updateData.status = status;
 
