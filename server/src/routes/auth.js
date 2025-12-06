@@ -35,7 +35,7 @@ router.get(
 
       // Redirect to frontend with token in query parameter
       const redirectUrl = `${process.env.CLIENT_URL}/auth/success?token=${token}`;
-      
+
       console.log(`🔐 User authenticated: ${req.user.email}`);
       console.log(`🔀 Redirecting to: ${redirectUrl}`);
 

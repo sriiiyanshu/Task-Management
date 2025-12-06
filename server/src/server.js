@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import passport from "./config/passport.js";
 import authRoutes from "./routes/auth.js";
+import taskRoutes from "./routes/tasks.js";
 import { authenticateJWT } from "./middleware/auth.js";
 
 // Load environment variables
@@ -62,14 +63,8 @@ app.get("/", (req, res) => {
 // Auth routes
 app.use("/auth", authRoutes);
 
-// Protected route example (will be replaced with actual task routes)
-app.get("/api/protected", authenticateJWT, (req, res) => {
-  res.json({
-    success: true,
-    message: "This is a protected route",
-    user: req.user,
-  });
-});
+// Task routes (all protected with JWT authentication)
+app.use("/api/tasks", authenticateJWT, taskRoutes);
 
 // 404 Handler
 app.use((req, res) => {

@@ -9,32 +9,42 @@ The Google OAuth + JWT authentication system has been fully implemented and inte
 ## 📁 Files Created
 
 ### 1. **`src/config/passport.js`**
+
 Passport.js configuration with Google OAuth Strategy
+
 - Authenticates users via Google OAuth
 - Finds existing users by `googleId`
 - Creates new users if they don't exist
 - Stores user info: email, name, googleId, picture
 
 ### 2. **`src/config/jwt.js`**
+
 JWT utility functions
+
 - `generateToken(user)` - Creates JWT with 24-hour expiration
 - `verifyToken(token)` - Verifies and decodes JWT
 - `decodeToken(token)` - Decodes without verification (debugging)
 
 ### 3. **`src/routes/auth.js`**
+
 Authentication routes
+
 - `GET /auth/google` - Initiates Google OAuth
 - `GET /auth/google/callback` - Handles OAuth callback, generates JWT
 - `GET /auth/logout` - Logout endpoint
 - `GET /auth/me` - Get current user info (protected)
 
 ### 4. **`src/middleware/auth.js`**
+
 JWT authentication middleware
+
 - `authenticateJWT` - Verifies Bearer token from Authorization header
 - `optionalAuth` - Optional authentication (doesn't block if missing)
 
 ### 5. **`src/server.js` (Updated)**
+
 Integrated authentication into Express app
+
 - Imported Passport and auth routes
 - Initialized Passport middleware
 - Mounted auth routes at `/auth`
@@ -45,56 +55,65 @@ Integrated authentication into Express app
 ## 🔐 Authentication Flow
 
 ### 1. **User Initiates Login**
+
 ```
 Frontend → GET http://localhost:8080/auth/google
 ```
+
 - User clicks "Login with Google" button
 - Frontend redirects to `/auth/google`
 - Passport initiates Google OAuth flow
 
 ### 2. **Google OAuth**
+
 ```
 Server → Google OAuth → User Authorization → Callback
 ```
+
 - User authorizes the app on Google
 - Google redirects to `/auth/google/callback` with auth code
 - Passport exchanges code for user profile
 
 ### 3. **User Creation/Login**
+
 ```javascript
 // In passport.js GoogleStrategy callback
 - Find user by googleId
 - If not found, create new user with:
   - email
-  - googleId  
+  - googleId
   - name
   - picture (optional)
 ```
 
 ### 4. **JWT Generation & Redirect**
+
 ```
 Server → Generates JWT → Redirects to Frontend
 ```
+
 ```
 Redirect URL: http://localhost:3000/auth/success?token={jwt}
 ```
 
 ### 5. **Frontend Token Storage**
+
 ```javascript
 // Frontend should extract token from URL
 const urlParams = new URLSearchParams(window.location.search);
-const token = urlParams.get('token');
-localStorage.setItem('token', token);
+const token = urlParams.get("token");
+localStorage.setItem("token", token);
 ```
 
 ### 6. **Authenticated Requests**
+
 ```javascript
 // All subsequent API requests include token
-fetch('http://localhost:8080/api/tasks', {
+fetch("http://localhost:8080/api/tasks", {
   headers: {
-    'Authorization': `Bearer ${token}`
-  }
-})
+    Authorization: `Bearer ${token}`,
+  },
+});
 ```
 
 ---
@@ -102,6 +121,7 @@ fetch('http://localhost:8080/api/tasks', {
 ## 🔧 Usage Examples
 
 ### **Protect a Route**
+
 ```javascript
 import { authenticateJWT } from "./middleware/auth.js";
 
@@ -114,19 +134,21 @@ app.get("/api/tasks", authenticateJWT, (req, res) => {
 ```
 
 ### **Access User Info in Controllers**
+
 ```javascript
 export const getUserTasks = async (req, res) => {
   const userId = req.user.id; // Set by authenticateJWT middleware
-  
+
   const tasks = await prisma.task.findMany({
     where: { userId },
   });
-  
+
   res.json({ success: true, tasks });
 };
 ```
 
 ### **Optional Authentication**
+
 ```javascript
 import { optionalAuth } from "./middleware/auth.js";
 
@@ -149,24 +171,32 @@ app.get("/api/public", optionalAuth, (req, res) => {
 ### **Public Endpoints**
 
 #### `GET /auth/google`
+
 Initiates Google OAuth flow
+
 ```bash
 # Redirect user to this URL
 http://localhost:8080/auth/google
 ```
 
 #### `GET /auth/google/callback`
+
 OAuth callback (handled automatically by Google)
+
 - Generates JWT on success
 - Redirects to: `${CLIENT_URL}/auth/success?token={jwt}`
 - Redirects on error: `${CLIENT_URL}/login?error=auth_failed`
 
 #### `GET /auth/logout`
+
 Logout endpoint (client should delete token)
+
 ```bash
 curl http://localhost:8080/auth/logout
 ```
+
 Response:
+
 ```json
 {
   "success": true,
@@ -177,12 +207,16 @@ Response:
 ### **Protected Endpoints**
 
 #### `GET /auth/me`
+
 Get current user information (requires JWT)
+
 ```bash
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   http://localhost:8080/auth/me
 ```
+
 Response:
+
 ```json
 {
   "success": true,
@@ -197,7 +231,9 @@ Response:
 ```
 
 #### `GET /api/protected` (Example)
+
 Test protected route
+
 ```bash
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   http://localhost:8080/api/protected
@@ -208,6 +244,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ## 🔑 JWT Token Details
 
 ### Token Payload
+
 ```json
 {
   "id": 1,
@@ -219,12 +256,14 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ```
 
 ### Token Expiration
+
 - Default: **24 hours**
 - Configured in `src/config/jwt.js`
 
 ### Error Responses
 
 **Missing Token:**
+
 ```json
 {
   "success": false,
@@ -234,6 +273,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ```
 
 **Invalid Format:**
+
 ```json
 {
   "success": false,
@@ -243,6 +283,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ```
 
 **Expired Token:**
+
 ```json
 {
   "success": false,
@@ -252,6 +293,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ```
 
 **Invalid Token:**
+
 ```json
 {
   "success": false,
@@ -265,23 +307,29 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ## 🧪 Testing Authentication
 
 ### 1. **Test Server is Running**
+
 ```bash
 curl http://localhost:8080/health
 ```
 
 ### 2. **Initiate OAuth (Browser)**
+
 Navigate to:
+
 ```
 http://localhost:8080/auth/google
 ```
 
 ### 3. **Extract Token from Redirect**
+
 After Google auth, you'll be redirected to:
+
 ```
 http://localhost:3000/auth/success?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### 4. **Test Protected Endpoint**
+
 ```bash
 TOKEN="your-jwt-token-here"
 
@@ -290,6 +338,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```
 
 ### 5. **Test Invalid Token**
+
 ```bash
 curl -H "Authorization: Bearer invalid-token" \
   http://localhost:8080/api/protected
@@ -300,6 +349,7 @@ curl -H "Authorization: Bearer invalid-token" \
 ## 🚨 Security Considerations
 
 ### ✅ Implemented
+
 - JWT tokens expire after 24 hours
 - Tokens signed with secret key from environment variable
 - CORS configured to allow only specific origins
@@ -307,6 +357,7 @@ curl -H "Authorization: Bearer invalid-token" \
 - Secure password-less authentication via Google
 
 ### ⚠️ Production Recommendations
+
 1. **Use HTTPS** - Never send tokens over HTTP in production
 2. **Secure JWT_SECRET** - Use a strong, random secret (at least 32 characters)
 3. **Token Refresh** - Consider implementing refresh tokens for longer sessions
@@ -348,19 +399,23 @@ CLIENT_URL="http://localhost:3000"
 ## 🐛 Troubleshooting
 
 ### "Not allowed by CORS"
+
 - Check `CLIENT_URL` in `.env`
 - Verify frontend origin matches allowed origins in `server.js`
 
 ### "Invalid token"
+
 - Token may be expired (24h limit)
 - Check JWT_SECRET matches between token generation and verification
 - Ensure token format is `Bearer <token>`
 
 ### "User not found"
+
 - User may have been deleted from database
 - Try logging in again to recreate user
 
 ### OAuth redirect fails
+
 - Check `GOOGLE_CALLBACK_URL` matches Google Cloud Console settings
 - Verify `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correct
 
@@ -369,6 +424,7 @@ CLIENT_URL="http://localhost:3000"
 ## ✨ Summary
 
 You now have a fully functional authentication system with:
+
 - ✅ Google OAuth integration
 - ✅ JWT token generation (24h expiry)
 - ✅ Protected routes with middleware

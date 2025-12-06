@@ -17,33 +17,35 @@
 
 ## 📍 API Endpoints
 
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| `GET` | `/health` | ❌ No | Server health check |
-| `GET` | `/auth/google` | ❌ No | Start Google OAuth |
-| `GET` | `/auth/google/callback` | ❌ No | OAuth callback (auto) |
-| `GET` | `/auth/logout` | ❌ No | Logout (client deletes token) |
-| `GET` | `/auth/me` | ✅ Yes | Get current user |
-| `GET` | `/api/protected` | ✅ Yes | Test protected route |
+| Method | Endpoint                | Auth Required | Description                   |
+| ------ | ----------------------- | ------------- | ----------------------------- |
+| `GET`  | `/health`               | ❌ No         | Server health check           |
+| `GET`  | `/auth/google`          | ❌ No         | Start Google OAuth            |
+| `GET`  | `/auth/google/callback` | ❌ No         | OAuth callback (auto)         |
+| `GET`  | `/auth/logout`          | ❌ No         | Logout (client deletes token) |
+| `GET`  | `/auth/me`              | ✅ Yes        | Get current user              |
+| `GET`  | `/api/protected`        | ✅ Yes        | Test protected route          |
 
 ---
 
 ## 🔑 Using Protected Routes
 
 ### Frontend (JavaScript/React)
+
 ```javascript
 // Store token after login
-localStorage.setItem('token', tokenFromURL);
+localStorage.setItem("token", tokenFromURL);
 
 // Make authenticated request
-const response = await fetch('http://localhost:8080/api/tasks', {
+const response = await fetch("http://localhost:8080/api/tasks", {
   headers: {
-    'Authorization': `Bearer ${localStorage.getItem('token')}`
-  }
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
 });
 ```
 
 ### Backend (Express Route)
+
 ```javascript
 import { authenticateJWT } from "./middleware/auth.js";
 
@@ -120,6 +122,7 @@ DATABASE_URL="postgresql://..."
 ## 🎯 Next: Build Task CRUD API
 
 Create `/api/tasks` endpoints:
+
 - `GET /api/tasks` - List user's tasks
 - `POST /api/tasks` - Create task
 - `PUT /api/tasks/:id` - Update task
