@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import passport from "./config/passport.js";
+import authRoutes from "./routes/auth.js";
+import { authenticateJWT } from "./middleware/auth.js";
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +34,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Initialize Passport
+app.use(passport.initialize());
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -40,16 +46,28 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API Routes will be added here
+// API Routes
 app.get("/", (req, res) => {
   res.json({
     message: "Task Tracker API",
     version: "1.0.0",
     endpoints: {
       health: "/health",
-      auth: "/api/auth",
+      auth: "/auth",
       tasks: "/api/tasks",
     },
+  });
+});
+
+// Auth routes
+app.use("/auth", authRoutes);
+
+// Protected route example (will be replaced with actual task routes)
+app.get("/api/protected", authenticateJWT, (req, res) => {
+  res.json({
+    success: true,
+    message: "This is a protected route",
+    user: req.user,
   });
 });
 
