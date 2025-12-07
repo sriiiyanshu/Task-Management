@@ -22,16 +22,20 @@ export const getTasks = async (filters = {}) => {
   const queryString = params.toString();
   const url = queryString ? `/api/tasks?${queryString}` : "/api/tasks";
 
-  return api.get(url);
+  const response = await api.get(url);
+  // Backend returns { success, count, tasks }
+  return response.data.tasks || [];
 };
 
 /**
  * Get a single task by ID
  * @param {number} id - Task ID
- * @returns {Promise} API response
+ * @returns {Promise} Task object
  */
 export const getTask = async (id) => {
-  return api.get(`/api/tasks/${id}`);
+  const response = await api.get(`/api/tasks/${id}`);
+  // Backend returns { success, task }
+  return response.data.task;
 };
 
 /**
@@ -42,43 +46,52 @@ export const getTask = async (id) => {
  * @param {string} taskData.dueDate - Due date (ISO 8601)
  * @param {string} taskData.priority - Priority (Low, Medium, High)
  * @param {string} taskData.status - Status (To Do, In Progress, Done)
- * @returns {Promise} API response
+ * @returns {Promise} Created task object
  */
 export const createTask = async (taskData) => {
-  return api.post("/api/tasks", taskData);
+  const response = await api.post("/api/tasks", taskData);
+  // Backend returns { success, message, task }
+  return response.data.task;
 };
 
 /**
  * Update an existing task
  * @param {number} id - Task ID
  * @param {Object} updates - Fields to update
- * @returns {Promise} API response
+ * @returns {Promise} Updated task object
  */
 export const updateTask = async (id, updates) => {
-  return api.put(`/api/tasks/${id}`, updates);
+  const response = await api.put(`/api/tasks/${id}`, updates);
+  // Backend returns { success, message, task }
+  return response.data.task;
 };
 
 /**
  * Delete a task
  * @param {number} id - Task ID
- * @returns {Promise} API response
+ * @returns {Promise} Success response
  */
 export const deleteTask = async (id) => {
-  return api.delete(`/api/tasks/${id}`);
+  const response = await api.delete(`/api/tasks/${id}`);
+  // Backend returns { success, message }
+  return response.data;
 };
 
 /**
  * Get current user info
- * @returns {Promise} API response
+ * @returns {Promise} User object
  */
 export const getCurrentUser = async () => {
-  return api.get("/auth/me");
+  const response = await api.get("/auth/me");
+  // Backend returns { success, user }
+  return response.data.user;
 };
 
 /**
  * Logout user
- * @returns {Promise} API response
+ * @returns {Promise} Success response
  */
 export const logout = async () => {
-  return api.get("/auth/logout");
+  const response = await api.get("/auth/logout");
+  return response.data;
 };

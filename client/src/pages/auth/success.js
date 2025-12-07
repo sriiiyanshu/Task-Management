@@ -52,9 +52,7 @@ export default function AuthSuccess() {
             <div className="mb-6 flex justify-center">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Signing you in...
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Signing you in...</h2>
             <p className="text-gray-600">Please wait while we process your authentication</p>
           </>
         )}
@@ -64,25 +62,12 @@ export default function AuthSuccess() {
             {/* Success Icon */}
             <div className="mb-6 flex justify-center">
               <div className="rounded-full bg-green-100 p-4">
-                <svg
-                  className="w-16 h-16 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Success!
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Success!</h2>
             <p className="text-gray-600">Redirecting to your dashboard...</p>
           </>
         )}
@@ -92,25 +77,12 @@ export default function AuthSuccess() {
             {/* Error Icon */}
             <div className="mb-6 flex justify-center">
               <div className="rounded-full bg-red-100 p-4">
-                <svg
-                  className="w-16 h-16 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Authentication Failed
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Authentication Failed</h2>
             <p className="text-gray-600">Redirecting back to login...</p>
           </>
         )}

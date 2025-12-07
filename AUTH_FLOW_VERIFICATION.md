@@ -62,6 +62,7 @@
 ```
 
 **Health Check:**
+
 ```json
 {
   "status": "OK",
@@ -71,6 +72,7 @@
 ```
 
 **Environment Variables:** ✅ Configured
+
 - `GOOGLE_CLIENT_ID`: Set
 - `GOOGLE_CLIENT_SECRET`: Set
 - `JWT_SECRET`: Set
@@ -78,12 +80,14 @@
 - `CLIENT_URL`: http://localhost:3000
 
 **Auth Routes:** ✅ Mounted at `/auth`
+
 - `GET /auth/google` - Initiates OAuth flow
 - `GET /auth/google/callback` - Handles OAuth callback and generates JWT
 - `GET /auth/logout` - Clears session
 - `GET /auth/me` - Returns current user info
 
 **Task Routes:** ✅ Mounted at `/api/tasks` (protected by JWT middleware)
+
 - `GET /api/tasks` - List all user tasks
 - `GET /api/tasks/:id` - Get single task
 - `POST /api/tasks` - Create new task
@@ -106,6 +110,7 @@
 ```
 
 **Environment Variables:** ✅ Configured
+
 - `NEXT_PUBLIC_API_URL`: http://localhost:8080
 
 ---
@@ -117,6 +122,7 @@
 **File:** `client/src/pages/login.js`
 
 **Features:**
+
 - ✅ Checks if user is already authenticated
 - ✅ Redirects authenticated users to `/dashboard`
 - ✅ "Sign in with Google" button
@@ -126,6 +132,7 @@
 - ✅ Terms of Service footer
 
 **Key Code:**
+
 ```javascript
 const handleGoogleLogin = () => {
   window.location.href = "http://localhost:8080/auth/google";
@@ -139,6 +146,7 @@ const handleGoogleLogin = () => {
 **File:** `client/src/pages/auth/success.js`
 
 **Features:**
+
 - ✅ Extracts JWT token from URL query parameter
 - ✅ Saves token to localStorage using `setToken()`
 - ✅ Redirects to `/dashboard` after 500ms delay
@@ -147,6 +155,7 @@ const handleGoogleLogin = () => {
 - ✅ Loading spinner and checkmark animations
 
 **Key Code:**
+
 ```javascript
 const { token } = router.query;
 if (token) {
@@ -162,6 +171,7 @@ if (token) {
 **File:** `client/src/pages/dashboard.js`
 
 **Features:**
+
 - ✅ Protected route - checks authentication
 - ✅ Redirects unauthenticated users to `/login`
 - ✅ Extracts user info from JWT token
@@ -172,6 +182,7 @@ if (token) {
 - ✅ **Fixed lint error** - proper useEffect pattern
 
 **Key Code:**
+
 ```javascript
 useEffect(() => {
   if (!isAuthenticated()) {
@@ -193,6 +204,7 @@ useEffect(() => {
 #### 1. API Client (`client/src/utils/api.js`)
 
 **Features:**
+
 - ✅ Axios instance with base URL
 - ✅ Request interceptor adds Authorization header
 - ✅ Token retrieved from localStorage
@@ -202,6 +214,7 @@ useEffect(() => {
 - ✅ Server-side rendering safe (`typeof window !== "undefined"`)
 
 **Key Code:**
+
 ```javascript
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
@@ -219,6 +232,7 @@ api.interceptors.request.use((config) => {
 #### 2. Auth Utilities (`client/src/utils/auth.js`)
 
 **Features:**
+
 - ✅ `setToken(token)` - Save to localStorage
 - ✅ `getToken()` - Retrieve from localStorage
 - ✅ `removeToken()` - Clear from localStorage
@@ -233,6 +247,7 @@ api.interceptors.request.use((config) => {
 #### 3. Task API (`client/src/utils/taskApi.js`)
 
 **Features:**
+
 - ✅ `getTasks(filters)` - Fetch tasks with optional filters
 - ✅ `getTask(id)` - Fetch single task
 - ✅ `createTask(taskData)` - Create new task
@@ -248,6 +263,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 1: New User Login
 
 **Steps:**
+
 1. User visits `http://localhost:3000/login`
 2. User clicks "Sign in with Google"
 3. Browser redirects to `http://localhost:8080/auth/google`
@@ -270,6 +286,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 2: Already Authenticated User
 
 **Steps:**
+
 1. User has valid JWT token in localStorage
 2. User visits `http://localhost:3000/login`
 3. `useEffect` hook checks `isAuthenticated()`
@@ -282,6 +299,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 3: Protected Route Access
 
 **Steps:**
+
 1. User without token tries to visit `/dashboard`
 2. `useEffect` hook checks `isAuthenticated()`
 3. Returns `false` (no token)
@@ -294,6 +312,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 4: API Request with Token
 
 **Steps:**
+
 1. Authenticated user calls `getTasks()`
 2. Axios request interceptor runs
 3. Token retrieved from localStorage
@@ -311,6 +330,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 5: Token Expiration
 
 **Steps:**
+
 1. User has expired JWT token (older than 24 hours)
 2. User makes API request
 3. Backend verifies token
@@ -326,6 +346,7 @@ api.interceptors.request.use((config) => {
 ### ✅ Scenario 6: Manual Logout
 
 **Steps:**
+
 1. User clicks "Logout" button on dashboard
 2. `handleLogout()` function runs
 3. `removeToken()` clears localStorage
@@ -338,21 +359,25 @@ api.interceptors.request.use((config) => {
 ## Security Verification
 
 ### ✅ CORS Protection
+
 - Backend only accepts requests from `http://localhost:3000`
 - Credentials are allowed for cookie-based sessions
 
 ### ✅ JWT Security
+
 - Tokens expire in 24 hours
 - Tokens are signed with secret key
 - Backend verifies signature on every request
 - Invalid/expired tokens return 401
 
 ### ✅ Route Protection
+
 - All task routes require valid JWT
 - Backend verifies user ID from token
 - Users can only access their own tasks
 
 ### ✅ Ownership Verification
+
 - Update/delete operations verify `task.userId === req.user.id`
 - Prevents unauthorized modifications
 
@@ -361,6 +386,7 @@ api.interceptors.request.use((config) => {
 ## Database Schema
 
 ### ✅ User Model
+
 ```prisma
 model User {
   id        Int      @id @default(autoincrement())
@@ -375,6 +401,7 @@ model User {
 ```
 
 ### ✅ Task Model
+
 ```prisma
 model Task {
   id          Int       @id @default(autoincrement())
@@ -415,6 +442,7 @@ model Task {
 ## Next Steps
 
 ### Immediate Tasks
+
 1. ✅ Authentication flow is complete and verified
 2. 🔄 Build task management UI components:
    - TaskList component to display tasks
@@ -423,6 +451,7 @@ model Task {
    - Filters for status, priority, search
 
 ### Future Enhancements
+
 - Add loading states for API calls
 - Implement error boundaries
 - Add toast notifications for actions
@@ -439,6 +468,7 @@ model Task {
 ✅ **Authentication flow is fully functional and verified**
 
 All components are working correctly:
+
 - Backend OAuth integration with Google
 - JWT token generation and verification
 - Frontend token management

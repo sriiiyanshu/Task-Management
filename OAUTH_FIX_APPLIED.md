@@ -1,11 +1,13 @@
 # 🔧 Quick Fix Applied
 
 ## Issue Fixed
+
 ✅ Changed callback URL from `/api/auth/google/callback` to `/auth/google/callback`
 
 ## Current Configuration
 
 **File:** `server/.env`
+
 ```env
 GOOGLE_CALLBACK_URL="http://localhost:8080/auth/google/callback"
 ```
@@ -19,24 +21,30 @@ GOOGLE_CALLBACK_URL="http://localhost:8080/auth/google/callback"
 You must update your Google Cloud Console OAuth settings to match:
 
 ### 🔗 Quick Link
+
 **Go to:** https://console.cloud.google.com/apis/credentials
 
 ### 📋 Steps (Takes 2 minutes)
 
 1. **Login to Google Cloud Console**
+
    - Use the same Google account you used to create the OAuth app
 
 2. **Navigate to Credentials**
+
    - APIs & Services → Credentials
    - Find OAuth 2.0 Client ID: `311510222867-jit07731s0civiiqk4fi4pfdb2jgd683`
 
 3. **Edit Authorized Redirect URIs**
+
    - Click on the client ID to edit
    - Find "Authorized redirect URIs" section
    - **Add or update to:**
+
    ```
    http://localhost:8080/auth/google/callback
    ```
+
    - Remove any old URLs like `http://localhost:8080/api/auth/google/callback`
    - Click **SAVE**
 

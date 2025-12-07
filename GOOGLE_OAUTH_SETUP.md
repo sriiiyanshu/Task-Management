@@ -11,6 +11,7 @@ This happens when the redirect URI in your app doesn't match what's configured i
 ## Current Configuration
 
 **Your App's Callback URL:**
+
 ```
 http://localhost:8080/auth/google/callback
 ```
@@ -22,10 +23,12 @@ http://localhost:8080/auth/google/callback
 ## How to Fix in Google Cloud Console
 
 ### Step 1: Go to Google Cloud Console
+
 1. Visit: https://console.cloud.google.com/
 2. Select your project (or create one if you haven't)
 
 ### Step 2: Navigate to OAuth Consent Screen
+
 1. Go to **APIs & Services** → **OAuth consent screen**
 2. Make sure you've configured:
    - App name: "Task Tracker"
@@ -34,6 +37,7 @@ http://localhost:8080/auth/google/callback
    - Scopes: `userinfo.email`, `userinfo.profile`
 
 ### Step 3: Configure Authorized Redirect URIs
+
 1. Go to **APIs & Services** → **Credentials**
 2. Find your OAuth 2.0 Client ID (the one starting with `311510222867-...`)
 3. Click on it to edit
@@ -47,6 +51,7 @@ http://localhost:8080/auth/google/callback
 6. Click **Save**
 
 ### Step 4: Restart Your Server
+
 After updating Google Cloud Console:
 
 ```bash
@@ -62,17 +67,21 @@ npm run dev
 When deploying to production, you'll need to add the production redirect URI:
 
 **Example for Google App Engine:**
+
 ```
 https://your-app-name.appspot.com/auth/google/callback
 ```
 
 **Example for custom domain:**
+
 ```
 https://yourdomain.com/auth/google/callback
 ```
 
 **Steps:**
+
 1. Add the production URL to `.env.production`:
+
    ```
    GOOGLE_CALLBACK_URL="https://your-app-name.appspot.com/auth/google/callback"
    ```
@@ -88,12 +97,15 @@ https://yourdomain.com/auth/google/callback
 After making changes:
 
 1. ✅ **Check `.env` file:**
+
    ```bash
    cat server/.env | grep GOOGLE_CALLBACK_URL
    ```
+
    Should show: `http://localhost:8080/auth/google/callback`
 
 2. ✅ **Check Google Cloud Console:**
+
    - OAuth 2.0 Client should have the same redirect URI
 
 3. ✅ **Test the flow:**
@@ -121,12 +133,12 @@ After making changes:
 
 ## Current OAuth URLs in Your App
 
-| Purpose | URL |
-|---------|-----|
-| Initiate OAuth | `http://localhost:8080/auth/google` |
-| OAuth Callback | `http://localhost:8080/auth/google/callback` |
-| Logout | `http://localhost:8080/auth/logout` |
-| Get Current User | `http://localhost:8080/auth/me` |
+| Purpose          | URL                                          |
+| ---------------- | -------------------------------------------- |
+| Initiate OAuth   | `http://localhost:8080/auth/google`          |
+| OAuth Callback   | `http://localhost:8080/auth/google/callback` |
+| Logout           | `http://localhost:8080/auth/logout`          |
+| Get Current User | `http://localhost:8080/auth/me`              |
 
 ---
 
@@ -135,11 +147,13 @@ After making changes:
 ### Still getting `redirect_uri_mismatch`?
 
 1. **Double-check the URL matches exactly:**
+
    - Copy from `.env` file
    - Paste into Google Cloud Console
    - No extra spaces or characters
 
 2. **Clear browser cache:**
+
    ```bash
    # Hard refresh in browser
    Cmd + Shift + R (Mac)
@@ -147,9 +161,11 @@ After making changes:
    ```
 
 3. **Wait a few minutes:**
+
    - Google Cloud changes can take 1-2 minutes to propagate
 
 4. **Check you're editing the correct Client ID:**
+
    - Your Client ID: `311510222867-jit07731s0civiiqk4fi4pfdb2jgd683.apps.googleusercontent.com`
    - Make sure you're editing the same one in Google Cloud Console
 
