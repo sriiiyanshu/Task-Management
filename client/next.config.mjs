@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/login',
+        permanent: true, // This effectively makes /login your homepage
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
