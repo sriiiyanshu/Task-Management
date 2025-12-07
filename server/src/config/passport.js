@@ -20,25 +20,45 @@ passport.use(
         const name = displayName;
         const picture = photos?.[0]?.value || null;
 
-        // Find user by googleId
+        // First, try to find user by googleId
         let user = await prisma.user.findUnique({
           where: { googleId },
         });
 
-        // If user doesn't exist, create new user
-        if (!user) {
-          user = await prisma.user.create({
+        // If found by googleId, return the user
+        if (user) {
+          console.log(`✅ Existing OAuth user logged in: ${email}`);
+          return done(null, user);
+        }
+
+        // If not found by googleId, check if email exists (account linking)
+        user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (user) {
+          // Link Google account to existing email-based account
+          user = await prisma.user.update({
+            where: { email },
             data: {
-              email,
               googleId,
-              name,
-              picture,
+              picture: picture || user.picture, // Update picture if available
             },
           });
-          console.log(`✅ New user created: ${email}`);
-        } else {
-          console.log(`✅ Existing user logged in: ${email}`);
+          console.log(`✅ Linked Google account to existing user: ${email}`);
+          return done(null, user);
         }
+
+        // No existing user found, create new user
+        user = await prisma.user.create({
+          data: {
+            email,
+            googleId,
+            name,
+            picture,
+          },
+        });
+        console.log(`✅ New OAuth user created: ${email}`);
 
         // Pass user to the next middleware
         return done(null, user);
@@ -62,10 +82,7 @@ passport.use(
         // Find user by email or username
         const user = await prisma.user.findFirst({
           where: {
-            OR: [
-              { email: emailOrUsername },
-              { username: emailOrUsername },
-            ],
+            OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
           },
         });
 
@@ -76,14 +93,14 @@ passport.use(
 
         // Check if user has a password (not OAuth-only user)
         if (!user.password) {
-          return done(null, false, { 
-            message: "This account uses Google Sign-In. Please sign in with Google." 
+          return done(null, false, {
+            message: "This account was created with Google Sign-In and has no password set. Please either sign in with Google or set a password by signing up with the same email.",
           });
         }
 
         // Verify password
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        
+
         if (!isPasswordValid) {
           return done(null, false, { message: "Invalid credentials" });
         }

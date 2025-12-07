@@ -3,7 +3,8 @@ import passport from "../config/passport.js";
 import { generateToken } from "../config/jwt.js";
 import bcrypt from "bcrypt";
 import prisma from "../config/database.js";
-import { validateSignup, validateLogin } from "../validators/auth.validator.js";
+import { validateSignup, validateLogin, validateSetPassword } from "../validators/auth.validator.js";
+import { authenticateJWT } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -19,20 +20,49 @@ router.post("/signup", validateSignup, async (req, res) => {
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email },
-          { username },
-        ],
+        OR: [{ email }, { username }],
       },
     });
 
     if (existingUser) {
+      // If email exists and user registered via OAuth (no password set)
       if (existingUser.email === email) {
+        if (!existingUser.password && existingUser.googleId) {
+          // OAuth user trying to add password - update the account
+          const hashedPassword = await bcrypt.hash(password, 10);
+
+          const updatedUser = await prisma.user.update({
+            where: { email },
+            data: {
+              username,
+              password: hashedPassword,
+            },
+          });
+
+          const token = generateToken(updatedUser);
+
+          console.log(`✅ OAuth user added password: ${updatedUser.email}`);
+
+          return res.status(200).json({
+            success: true,
+            message: "Password added to your account successfully",
+            token,
+            user: {
+              id: updatedUser.id,
+              email: updatedUser.email,
+              username: updatedUser.username,
+              name: updatedUser.name,
+            },
+          });
+        }
+
+        // Email already has password
         return res.status(400).json({
           success: false,
-          errors: ["Email already registered"],
+          errors: ["Email already registered with password"],
         });
       }
+
       if (existingUser.username === username) {
         return res.status(400).json({
           success: false,
@@ -171,6 +201,86 @@ router.get("/logout", (req, res) => {
     success: true,
     message: "Logged out successfully. Please remove the token from client storage.",
   });
+});
+
+/**
+ * @route   POST /auth/set-password
+ * @desc    Set password for OAuth users (requires authentication)
+ * @access  Private
+ */
+router.post("/set-password", authenticateJWT, validateSetPassword, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const userId = req.user.id;
+
+    // Get current user
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        errors: ["User not found"],
+      });
+    }
+
+    // Check if user already has a password
+    if (user.password) {
+      return res.status(400).json({
+        success: false,
+        errors: ["Password is already set for this account. Use password change instead."],
+      });
+    }
+
+    // Check if username is already taken by another user
+    if (username !== user.username) {
+      const existingUsername = await prisma.user.findFirst({
+        where: {
+          username,
+          NOT: { id: userId },
+        },
+      });
+
+      if (existingUsername) {
+        return res.status(400).json({
+          success: false,
+          errors: ["Username already taken"],
+        });
+      }
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user with password and username
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        username,
+        password: hashedPassword,
+      },
+    });
+
+    console.log(`✅ Password set for OAuth user: ${updatedUser.email}`);
+
+    res.json({
+      success: true,
+      message: "Password set successfully. You can now login with email/username and password.",
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        name: updatedUser.name,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error setting password:", error);
+    res.status(500).json({
+      success: false,
+      errors: ["Failed to set password. Please try again."],
+    });
+  }
 });
 
 /**

@@ -82,3 +82,35 @@ export const validateLogin = (req, res, next) => {
 
   next();
 };
+
+/**
+ * Validate set password request
+ */
+export const validateSetPassword = (req, res, next) => {
+  const { username, password } = req.body;
+  const errors = [];
+
+  // Validate username
+  if (!username) {
+    errors.push("Username is required");
+  } else if (!USERNAME_REGEX.test(username)) {
+    errors.push("Username must be 3-20 characters long and contain only letters, numbers, and underscores");
+  }
+
+  // Validate password
+  if (!password) {
+    errors.push("Password is required");
+  } else if (password.length < PASSWORD_MIN_LENGTH) {
+    errors.push(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`);
+  }
+
+  // Return errors if any
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      errors,
+    });
+  }
+
+  next();
+};

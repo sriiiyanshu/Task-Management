@@ -8,7 +8,7 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
-  
+
   // Form states
   const [formData, setFormData] = useState({
     emailOrUsername: "",
@@ -101,11 +101,7 @@ export default function Login() {
               setErrors([]);
               setFormData({ emailOrUsername: "", email: "", username: "", password: "", name: "" });
             }}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              !isSignUp
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${!isSignUp ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
           >
             Login
           </button>
@@ -115,11 +111,7 @@ export default function Login() {
               setErrors([]);
               setFormData({ emailOrUsername: "", email: "", username: "", password: "", name: "" });
             }}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              isSignUp
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${isSignUp ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
           >
             Sign Up
           </button>
@@ -140,9 +132,7 @@ export default function Login() {
         {!isSignUp ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email or Username
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email or Username</label>
               <input
                 type="text"
                 name="emailOrUsername"
@@ -155,9 +145,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input
                 type="password"
                 name="password"
@@ -181,9 +169,7 @@ export default function Login() {
           /* Sign Up Form */
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
               <input
                 type="text"
                 name="name"
@@ -196,9 +182,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 type="email"
                 name="email"
@@ -211,9 +195,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Username
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
               <input
                 type="text"
                 name="username"
@@ -227,9 +209,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input
                 type="password"
                 name="password"
@@ -278,9 +258,7 @@ export default function Login() {
         </button>
 
         {/* Info Text */}
-        <p className="text-center text-xs text-gray-500 mt-4">
-          By signing in, you agree to our Terms of Service and Privacy Policy
-        </p>
+        <p className="text-center text-xs text-gray-500 mt-4">By signing in, you agree to our Terms of Service and Privacy Policy</p>
       </div>
     </div>
   );
