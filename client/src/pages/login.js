@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { isAuthenticated, setToken } from "@/utils/auth";
-import axios from "axios";
+import api from "@/utils/api";
 
 export default function Login() {
   const router = useRouter();
@@ -27,7 +27,8 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     // Redirect to backend Google OAuth endpoint
-    window.location.href = "http://localhost:8080/auth/google";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   const handleInputChange = (e) => {
@@ -44,7 +45,7 @@ export default function Login() {
     setErrors([]);
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      const response = await api.post("/auth/login", {
         emailOrUsername: formData.emailOrUsername,
         password: formData.password,
       });
@@ -66,7 +67,7 @@ export default function Login() {
     setErrors([]);
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/signup", {
+      const response = await api.post("/auth/signup", {
         email: formData.email,
         username: formData.username,
         password: formData.password,
