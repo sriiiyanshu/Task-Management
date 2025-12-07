@@ -3,14 +3,18 @@
 ## New Features Added
 
 ### 1. Priority Filter ⭐
+
 Filter tasks by priority level:
+
 - **All Priority** (default) - Shows all tasks
 - **Low** - Shows only low priority tasks
-- **Medium** - Shows only medium priority tasks  
+- **Medium** - Shows only medium priority tasks
 - **High** - Shows only high priority tasks
 
 ### 2. Sort Options 📊
+
 Sort tasks by different criteria:
+
 - **Newest First** (default) - Most recently created tasks appear first
 - **Oldest First** - Oldest tasks appear first
 - **Due Date** - Tasks sorted by due date (closest deadline first, tasks without due dates appear last)
@@ -19,6 +23,7 @@ Sort tasks by different criteria:
 ## How It Works
 
 ### Filter Flow
+
 1. User selects filters (Status, Priority, Search)
 2. Backend API is called with filter parameters
 3. Filtered results are returned from database
@@ -27,28 +32,32 @@ Sort tasks by different criteria:
 ### Sort Logic
 
 **Newest First:**
+
 ```javascript
-sortedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+sortedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 ```
 
 **Oldest First:**
+
 ```javascript
-sortedTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+sortedTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 ```
 
 **Due Date:**
+
 ```javascript
 sortedTasks.sort((a, b) => {
-  if (!a.dueDate) return 1;  // Tasks without due date go to end
+  if (!a.dueDate) return 1; // Tasks without due date go to end
   if (!b.dueDate) return -1;
   return new Date(a.dueDate) - new Date(b.dueDate);
-})
+});
 ```
 
 **Priority:**
+
 ```javascript
 const priorityOrder = { High: 1, Medium: 2, Low: 3 };
-sortedTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+sortedTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 ```
 
 ## UI Layout
@@ -68,11 +77,13 @@ On mobile, they stack vertically for better usability.
 The backend API (`/api/tasks`) now supports the `priority` filter parameter:
 
 **Request:**
+
 ```
 GET /api/tasks?status=To Do&priority=High&search=meeting
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -94,11 +105,13 @@ GET /api/tasks?status=To Do&priority=High&search=meeting
 Users can combine multiple filters:
 
 **Example 1:** High priority tasks that are "In Progress"
+
 - Priority: High
 - Status: In Progress
 - Sort: Due Date
 
 **Example 2:** Search for "design" tasks with Medium priority, sorted by newest
+
 - Search: "design"
 - Priority: Medium
 - Sort: Newest First
@@ -106,6 +119,7 @@ Users can combine multiple filters:
 ## Implementation Details
 
 ### State Management
+
 ```javascript
 const [statusFilter, setStatusFilter] = useState("");
 const [priorityFilter, setPriorityFilter] = useState("");
@@ -113,19 +127,21 @@ const [sortBy, setSortBy] = useState("newest");
 ```
 
 ### Filter Effect
+
 ```javascript
 useEffect(() => {
   const filters = {};
   if (statusFilter) filters.status = statusFilter;
   if (priorityFilter) filters.priority = priorityFilter;
   if (searchQuery) filters.search = searchQuery;
-  
+
   const data = await getTasks(filters);
   setTasks(data);
 }, [user, statusFilter, priorityFilter, searchQuery]);
 ```
 
 ### Sorting Function
+
 ```javascript
 const getSortedTasks = () => {
   let sortedTasks = [...tasks];
@@ -141,6 +157,7 @@ const getSortedTasks = () => {
 - **Sorting is applied to already filtered results**
 
 This approach ensures:
+
 1. Backend handles heavy filtering with database queries
 2. Client sorts smaller result set
 3. No need for backend changes to support different sort orders
@@ -173,6 +190,7 @@ This approach ensures:
 ## Future Enhancements
 
 Potential additions:
+
 - 📅 Date range filter (created between X and Y)
 - 🏷️ Tags/Categories
 - 👤 Assigned to (for team features)

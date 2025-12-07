@@ -14,7 +14,9 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  googleId  String   @unique
+  googleId  String?  @unique  // Optional for local auth users
+  username  String?  @unique  // For local auth
+  password  String?           // Hashed password for local auth
   name      String
   picture   String?
   tasks     Task[]

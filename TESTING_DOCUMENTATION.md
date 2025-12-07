@@ -7,11 +7,13 @@ Comprehensive test suite for the Task Tracker Backend API using **Jest** and **S
 ## Setup
 
 ### Dependencies Installed
+
 ```bash
 npm install --save-dev jest supertest
 ```
 
 ### Test Scripts Added to package.json
+
 ```json
 {
   "scripts": {
@@ -25,16 +27,19 @@ npm install --save-dev jest supertest
 ## Running Tests
 
 ### Run All Tests
+
 ```bash
 npm test
 ```
 
 ### Watch Mode (Re-run on file changes)
+
 ```bash
 npm run test:watch
 ```
 
 ### Generate Coverage Report
+
 ```bash
 npm run test:coverage
 ```
@@ -42,6 +47,7 @@ npm run test:coverage
 ## Test Structure
 
 ### File Location
+
 ```
 server/
 ├── tests/
@@ -56,23 +62,29 @@ server/
 ## Test Categories
 
 ### 1. **Health & Basic Endpoints**
+
 - `GET /health` - Returns 200 and health status
 - `GET /` - Returns API information
 
 ### 2. **Authentication Tests**
+
 ✅ Tests JWT middleware without real Google OAuth
+
 - No token provided → 401 Unauthorized
-- Invalid token → 401 Unauthorized  
+- Invalid token → 401 Unauthorized
 - Malformed Authorization header → 401
 - Valid JWT token → 200 OK
 
 **Mock Strategy:**
+
 - JWT tokens generated using `jsonwebtoken`
 - No real Google OAuth required
 - Prisma client mocked to return test users
 
 ### 3. **GET /api/tasks - Retrieve Tasks**
+
 ✅ **Basic Functionality**
+
 - Returns 200 and array of tasks
 - Returns empty array when no tasks
 - Filters by status (To Do, In Progress, Done)
@@ -80,13 +92,16 @@ server/
 - Search by title/description
 
 ### 4. **POST /api/tasks - Create Task**
+
 ✅ **Validation Tests**
+
 - Creates task with valid data → 201 Created
 - Missing title → 400 Bad Request
 - Invalid priority value → 400
 - Invalid status value → 400
 
 ✅ **Security Tests**
+
 - **SQL Injection**: `'; DROP TABLE tasks; --`
   - Prisma parameterizes queries (safe)
   - Malicious string stored as plain text
@@ -95,25 +110,32 @@ server/
 - **Special Characters**: Handles safely
 
 ### 5. **PUT /api/tasks/:id - Update Task**
+
 ✅ **Authorization Tests**
+
 - Updates own task → 200 OK
 - Task not found → 404 Not Found
 - **Cannot update other user's tasks** → 403 Forbidden
 
 ### 6. **DELETE /api/tasks/:id - Delete Task**
+
 ✅ **Authorization Tests**
+
 - Deletes own task → 200 OK
 - Task not found → 404
 - **Cannot delete other user's tasks** → 403 Forbidden
 
 ### 7. **Security & Edge Cases**
+
 ✅ **Input Validation**
+
 - Extremely long strings (10,000 chars)
 - Null/undefined values
 - Special characters in search queries
 - Invalid Content-Type headers
 
 ✅ **Error Handling**
+
 - Database connection errors → 500
 - Invalid task ID formats → 400/404
 - Non-existent routes → 404
@@ -121,6 +143,7 @@ server/
 ## Mocking Strategy
 
 ### Prisma Client Mock
+
 ```javascript
 jest.mock("../src/config/database.js", () => ({
   __esModule: true,
@@ -140,17 +163,15 @@ jest.mock("../src/config/database.js", () => ({
 ```
 
 ### JWT Token Generation
+
 ```javascript
 const generateToken = (userId = 1, email = "test@example.com") => {
-  return jwt.sign(
-    { id: userId, email, name: "Test User" },
-    process.env.JWT_SECRET || "test-secret",
-    { expiresIn: "24h" }
-  );
+  return jwt.sign({ id: userId, email, name: "Test User" }, process.env.JWT_SECRET || "test-secret", { expiresIn: "24h" });
 };
 ```
 
 ### Mock Data
+
 ```javascript
 const mockUser = {
   id: 1,
@@ -174,7 +195,9 @@ const mockTasks = [
 ## Security Test Cases
 
 ### 1. SQL Injection Prevention
+
 **Attack Vector:**
+
 ```javascript
 {
   title: "'; DROP TABLE tasks; --",
@@ -183,28 +206,35 @@ const mockTasks = [
 ```
 
 **Protection:**
+
 - Prisma uses parameterized queries
 - SQL injection strings stored as plain text
 - Database schema remains intact
 
 ### 2. XSS (Cross-Site Scripting) Prevention
+
 **Attack Vector:**
+
 ```javascript
 {
-  description: "<script>alert('XSS')</script>"
+  description: "<script>alert('XSS')</script>";
 }
 ```
 
 **Protection:**
+
 - Backend stores as-is (frontend must sanitize)
 - API doesn't execute JavaScript
 - Content-Type headers enforced
 
 ### 3. Authorization Bypass Prevention
+
 **Attack Scenario:**
+
 - User A tries to modify User B's task
 
 **Protection:**
+
 ```javascript
 // Checks if task.userId matches authenticated user
 if (task.userId !== req.user.id) {
@@ -213,14 +243,18 @@ if (task.userId !== req.user.id) {
 ```
 
 ### 4. Input Validation
+
 **Test Cases:**
+
 - Title > 10,000 characters → Handled
 - Null/undefined values → Rejected
 - Invalid enum values (priority, status) → Rejected
 - Special characters → Sanitized
 
 ### 5. Authentication Bypass Prevention
+
 **Test Cases:**
+
 - No Authorization header → 401
 - Invalid JWT signature → 401
 - Expired JWT token → 401
@@ -228,12 +262,12 @@ if (task.userId !== req.user.id) {
 
 ## Test Coverage Goals
 
-| Category | Target | Current |
-|----------|--------|---------|
-| Routes | 90%+ | ✅ |
-| Middleware | 95%+ | ✅ |
-| Controllers | 85%+ | ✅ |
-| Overall | 80%+ | ✅ |
+| Category    | Target | Current |
+| ----------- | ------ | ------- |
+| Routes      | 90%+   | ✅      |
+| Middleware  | 95%+   | ✅      |
+| Controllers | 85%+   | ✅      |
+| Overall     | 80%+   | ✅      |
 
 ## Sample Test Output
 
@@ -272,22 +306,26 @@ Time:        2.456s
 ## Key Features
 
 ### ✅ No Real Database Required
+
 - All database calls mocked
 - Tests run in isolation
 - Fast execution
 
 ### ✅ No Google OAuth Required
+
 - JWT tokens generated directly
 - Authentication flow fully mocked
 - No external API dependencies
 
 ### ✅ Comprehensive Coverage
+
 - Happy path scenarios
 - Error handling
 - Edge cases
 - Security vulnerabilities
 
 ### ✅ Easy to Extend
+
 - Add new test cases easily
 - Mock data centralized
 - Clear test structure
@@ -304,7 +342,9 @@ Time:        2.456s
 ## Common Issues & Solutions
 
 ### Issue: Tests timeout
+
 **Solution:** Increase Jest timeout in package.json
+
 ```json
 {
   "jest": {
@@ -314,7 +354,9 @@ Time:        2.456s
 ```
 
 ### Issue: ES Module errors
+
 **Solution:** Use `--experimental-vm-modules` flag
+
 ```json
 {
   "scripts": {
@@ -324,7 +366,9 @@ Time:        2.456s
 ```
 
 ### Issue: Prisma mock not working
+
 **Solution:** Ensure mock is defined before imports
+
 ```javascript
 // Mock MUST come before import
 jest.mock("../src/config/database.js", () => ({ ... }));
@@ -350,6 +394,7 @@ import prisma from "../src/config/database.js";
 ---
 
 **✅ Test Suite Ready for Production Use**
+
 - All critical endpoints tested
 - Security vulnerabilities covered
 - Authorization properly tested

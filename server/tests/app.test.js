@@ -1,14 +1,14 @@
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
 import request from "supertest";
 import jwt from "jsonwebtoken";
 
 // Set test environment variables before importing
-process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-jwt-secret';
-process.env.GOOGLE_CLIENT_ID = 'test-client-id';
-process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret';
-process.env.GOOGLE_CALLBACK_URL = 'http://localhost:8080/auth/google/callback';
-process.env.CLIENT_URL = 'http://localhost:3000';
+process.env.NODE_ENV = "test";
+process.env.JWT_SECRET = "test-jwt-secret";
+process.env.GOOGLE_CLIENT_ID = "test-client-id";
+process.env.GOOGLE_CLIENT_SECRET = "test-client-secret";
+process.env.GOOGLE_CALLBACK_URL = "http://localhost:8080/auth/google/callback";
+process.env.CLIENT_URL = "http://localhost:3000";
 
 // Create mock Prisma client
 const mockPrisma = {
@@ -26,21 +26,17 @@ const mockPrisma = {
 };
 
 // Mock the database module
-jest.unstable_mockModule('../src/config/database.js', () => ({
+jest.unstable_mockModule("../src/config/database.js", () => ({
   default: mockPrisma,
 }));
 
 // Import app after mocking
-const { default: app } = await import('../src/server.js');
+const { default: app } = await import("../src/server.js");
 const prisma = mockPrisma;
 
 // Helper to generate valid JWT token
 const generateToken = (userId = 1, email = "test@example.com") => {
-  return jwt.sign(
-    { id: userId, email, name: "Test User" },
-    process.env.JWT_SECRET || "test-secret",
-    { expiresIn: "24h" }
-  );
+  return jwt.sign({ id: userId, email, name: "Test User" }, process.env.JWT_SECRET || "test-secret", { expiresIn: "24h" });
 };
 
 // Mock user for authentication
@@ -122,18 +118,14 @@ describe("Task Tracker API Tests", () => {
     });
 
     it("should return 401 when invalid token is provided", async () => {
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", "Bearer invalid-token-here");
+      const response = await request(app).get("/api/tasks").set("Authorization", "Bearer invalid-token-here");
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("error");
     });
 
     it("should return 401 when malformed Authorization header", async () => {
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", "InvalidFormat");
+      const response = await request(app).get("/api/tasks").set("Authorization", "InvalidFormat");
 
       expect(response.status).toBe(401);
     });
@@ -143,9 +135,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findMany.mockResolvedValue([]);
 
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
     });
@@ -160,9 +150,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findMany.mockResolvedValue(mockTasks);
 
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -177,9 +165,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findMany.mockResolvedValue([]);
 
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.tasks).toEqual([]);
@@ -192,9 +178,7 @@ describe("Task Tracker API Tests", () => {
       const filteredTasks = mockTasks.filter((t) => t.status === "To Do");
       prisma.task.findMany.mockResolvedValue(filteredTasks);
 
-      const response = await request(app)
-        .get("/api/tasks?status=To Do")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks?status=To Do").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.tasks.length).toBe(1);
@@ -213,9 +197,7 @@ describe("Task Tracker API Tests", () => {
       const filteredTasks = mockTasks.filter((t) => t.priority === "High");
       prisma.task.findMany.mockResolvedValue(filteredTasks);
 
-      const response = await request(app)
-        .get("/api/tasks?priority=High")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks?priority=High").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(prisma.task.findMany).toHaveBeenCalledWith(
@@ -232,9 +214,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findMany.mockResolvedValue([mockTasks[0]]);
 
-      const response = await request(app)
-        .get("/api/tasks?search=Test Task 1")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks?search=Test Task 1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(prisma.task.findMany).toHaveBeenCalled();
@@ -259,10 +239,7 @@ describe("Task Tracker API Tests", () => {
       const newTask = { id: 3, ...validTaskData, userId: 1 };
       prisma.task.create.mockResolvedValue(newTask);
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(validTaskData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(validTaskData);
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("success", true);
@@ -275,10 +252,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       const invalidData = { description: "No title" };
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(invalidData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(invalidData);
 
       expect(response.status).toBe(400);
     });
@@ -299,10 +273,7 @@ describe("Task Tracker API Tests", () => {
         userId: 1,
       });
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(sqlInjectionData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(sqlInjectionData);
 
       // Should either succeed (Prisma handles sanitization) or return 400
       expect([201, 400]).toContain(response.status);
@@ -330,10 +301,7 @@ describe("Task Tracker API Tests", () => {
         userId: 1,
       });
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(xssData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(xssData);
 
       expect([201, 400]).toContain(response.status);
     });
@@ -347,10 +315,7 @@ describe("Task Tracker API Tests", () => {
         status: "To Do",
       };
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(invalidData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(invalidData);
 
       expect([400, 500]).toContain(response.status);
     });
@@ -364,10 +329,7 @@ describe("Task Tracker API Tests", () => {
         status: "InvalidStatus",
       };
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send(invalidData);
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send(invalidData);
 
       expect([400, 500]).toContain(response.status);
     });
@@ -384,10 +346,7 @@ describe("Task Tracker API Tests", () => {
       const updatedTask = { ...mockTasks[0], title: "Updated Title" };
       prisma.task.update.mockResolvedValue(updatedTask);
 
-      const response = await request(app)
-        .put("/api/tasks/1")
-        .set("Authorization", `Bearer ${token}`)
-        .send({ title: "Updated Title" });
+      const response = await request(app).put("/api/tasks/1").set("Authorization", `Bearer ${token}`).send({ title: "Updated Title" });
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -399,10 +358,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findUnique.mockResolvedValue(null);
 
-      const response = await request(app)
-        .put("/api/tasks/999")
-        .set("Authorization", `Bearer ${token}`)
-        .send({ title: "Updated" });
+      const response = await request(app).put("/api/tasks/999").set("Authorization", `Bearer ${token}`).send({ title: "Updated" });
 
       expect(response.status).toBe(404);
     });
@@ -413,10 +369,7 @@ describe("Task Tracker API Tests", () => {
       const otherUserTask = { ...mockTasks[0], userId: 2 };
       prisma.task.findUnique.mockResolvedValue(otherUserTask);
 
-      const response = await request(app)
-        .put("/api/tasks/1")
-        .set("Authorization", `Bearer ${token}`)
-        .send({ title: "Hacked" });
+      const response = await request(app).put("/api/tasks/1").set("Authorization", `Bearer ${token}`).send({ title: "Hacked" });
 
       expect(response.status).toBe(403);
     });
@@ -432,9 +385,7 @@ describe("Task Tracker API Tests", () => {
       prisma.task.findUnique.mockResolvedValue(mockTasks[0]);
       prisma.task.delete.mockResolvedValue(mockTasks[0]);
 
-      const response = await request(app)
-        .delete("/api/tasks/1")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).delete("/api/tasks/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -446,9 +397,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findUnique.mockResolvedValue(null);
 
-      const response = await request(app)
-        .delete("/api/tasks/999")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).delete("/api/tasks/999").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(404);
     });
@@ -459,9 +408,7 @@ describe("Task Tracker API Tests", () => {
       const otherUserTask = { ...mockTasks[0], userId: 2 };
       prisma.task.findUnique.mockResolvedValue(otherUserTask);
 
-      const response = await request(app)
-        .delete("/api/tasks/1")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).delete("/api/tasks/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(403);
     });
@@ -476,13 +423,10 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       const longString = "A".repeat(10000);
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send({
-          title: longString,
-          description: longString,
-        });
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send({
+        title: longString,
+        description: longString,
+      });
 
       // Should handle gracefully
       expect([201, 400, 413, 500]).toContain(response.status);
@@ -492,13 +436,10 @@ describe("Task Tracker API Tests", () => {
       const token = generateToken();
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .send({
-          title: null,
-          description: undefined,
-        });
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).send({
+        title: null,
+        description: undefined,
+      });
 
       expect([400, 500]).toContain(response.status);
     });
@@ -508,9 +449,7 @@ describe("Task Tracker API Tests", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       prisma.task.findMany.mockResolvedValue([]);
 
-      const response = await request(app)
-        .get("/api/tasks?search=%27%22%3C%3E%26")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks?search=%27%22%3C%3E%26").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
     });
@@ -518,11 +457,7 @@ describe("Task Tracker API Tests", () => {
     it("should reject requests with invalid content-type", async () => {
       const token = generateToken();
 
-      const response = await request(app)
-        .post("/api/tasks")
-        .set("Authorization", `Bearer ${token}`)
-        .set("Content-Type", "text/plain")
-        .send("invalid data");
+      const response = await request(app).post("/api/tasks").set("Authorization", `Bearer ${token}`).set("Content-Type", "text/plain").send("invalid data");
 
       expect([400, 500]).toContain(response.status);
     });
@@ -535,13 +470,9 @@ describe("Task Tracker API Tests", () => {
     it("should handle database connection errors", async () => {
       const token = generateToken();
       prisma.user.findUnique.mockResolvedValue(mockUser);
-      prisma.task.findMany.mockRejectedValue(
-        new Error("Database connection failed")
-      );
+      prisma.task.findMany.mockRejectedValue(new Error("Database connection failed"));
 
-      const response = await request(app)
-        .get("/api/tasks")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(500);
     });
@@ -550,9 +481,7 @@ describe("Task Tracker API Tests", () => {
       const token = generateToken();
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
-      const response = await request(app)
-        .get("/api/tasks/invalid-id")
-        .set("Authorization", `Bearer ${token}`);
+      const response = await request(app).get("/api/tasks/invalid-id").set("Authorization", `Bearer ${token}`);
 
       expect([400, 404, 500]).toContain(response.status);
     });

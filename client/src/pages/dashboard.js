@@ -14,7 +14,7 @@ export default function Dashboard() {
   const [priorityFilter, setPriorityFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [deleting, setDeleting] = useState(null);
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -147,7 +147,7 @@ export default function Dashboard() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       alert("Please enter a task title");
       return;
@@ -342,10 +342,7 @@ export default function Dashboard() {
             </select>
 
             {/* Add Task Button */}
-            <button 
-              onClick={handleCreateTask}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
-            >
+            <button onClick={handleCreateTask} className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
               <Plus className="h-5 w-5" />
               Add Task
             </button>
@@ -446,14 +443,8 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {editingTask ? "Edit Task" : "Create New Task"}
-              </h2>
-              <button
-                onClick={handleCloseModal}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                aria-label="Close modal"
-              >
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{editingTask ? "Edit Task" : "Create New Task"}</h2>
+              <button onClick={handleCloseModal} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" aria-label="Close modal">
                 <X className="h-6 w-6 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
@@ -546,9 +537,7 @@ export default function Dashboard() {
                   min={getMinDate()}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Dates older than 1 month are not available
-                </p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Dates older than 1 month are not available</p>
               </div>
 
               {/* Modal Footer */}
