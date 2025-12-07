@@ -38,3 +38,6 @@ yarn-error.log*
 
 # Google credentials (if accidentally added)
 **/client_secret_*.json
+
+*/app.yaml
+
