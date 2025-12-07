@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { isAuthenticated, getUserFromToken, removeToken } from "@/utils/auth";
-import { getTasks, deleteTask } from "@/utils/taskApi";
-import { Trash2, Search, Plus } from "lucide-react";
+import { getTasks, deleteTask, createTask, updateTask } from "@/utils/taskApi";
+import { Trash2, Search, Plus, Edit2, X } from "lucide-react";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -12,6 +12,18 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [deleting, setDeleting] = useState(null);
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    priority: "Medium",
+    status: "To Do",
+    dueDate: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   // Check authentication and load user
   useEffect(() => {
@@ -70,6 +82,89 @@ export default function Dashboard() {
       alert("Failed to delete task. Please try again.");
     } finally {
       setDeleting(null);
+    }
+  };
+
+  // Open modal for creating new task
+  const handleCreateTask = () => {
+    setEditingTask(null);
+    setFormData({
+      title: "",
+      description: "",
+      priority: "Medium",
+      status: "To Do",
+      dueDate: "",
+    });
+    setIsModalOpen(true);
+  };
+
+  // Open modal for editing task
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setFormData({
+      title: task.title,
+      description: task.description || "",
+      priority: task.priority,
+      status: task.status,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
+    });
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingTask(null);
+    setFormData({
+      title: "",
+      description: "",
+      priority: "Medium",
+      status: "To Do",
+      dueDate: "",
+    });
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.title.trim()) {
+      alert("Please enter a task title");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const taskData = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        priority: formData.priority,
+        status: formData.status,
+        dueDate: formData.dueDate || null,
+      };
+
+      if (editingTask) {
+        // Update existing task
+        const updatedTask = await updateTask(editingTask.id, taskData);
+        setTasks(tasks.map((task) => (task.id === editingTask.id ? updatedTask : task)));
+      } else {
+        // Create new task
+        const newTask = await createTask(taskData);
+        setTasks([newTask, ...tasks]);
+      }
+
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error saving task:", error);
+      alert("Failed to save task. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -170,8 +265,11 @@ export default function Dashboard() {
               <option value="Done">Done</option>
             </select>
 
-            {/* Add Task Button (Placeholder) */}
-            <button className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium whitespace-nowrap">
+            {/* Add Task Button */}
+            <button 
+              onClick={handleCreateTask}
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
+            >
               <Plus className="h-5 w-5" />
               Add Task
             </button>
@@ -228,15 +326,27 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    {/* Delete Button */}
-                    <button
-                      onClick={() => handleDeleteTask(task.id)}
-                      disabled={deleting === task.id}
-                      className="ml-4 p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                      aria-label="Delete task"
-                    >
-                      {deleting === task.id ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div> : <Trash2 className="h-5 w-5" />}
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 ml-4">
+                      {/* Edit Button */}
+                      <button
+                        onClick={() => handleEditTask(task)}
+                        className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        aria-label="Edit task"
+                      >
+                        <Edit2 className="h-5 w-5" />
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDeleteTask(task.id)}
+                        disabled={deleting === task.id}
+                        className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                        aria-label="Delete task"
+                      >
+                        {deleting === task.id ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div> : <Trash2 className="h-5 w-5" />}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -244,6 +354,143 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Task Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {editingTask ? "Edit Task" : "Create New Task"}
+              </h2>
+              <button
+                onClick={handleCloseModal}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Title */}
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter task title"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                  placeholder="Enter task description (optional)"
+                />
+              </div>
+
+              {/* Priority and Status Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Priority */}
+                <div>
+                  <label htmlFor="priority" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Priority
+                  </label>
+                  <select
+                    id="priority"
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Status
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  id="dueDate"
+                  name="dueDate"
+                  value={formData.dueDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  disabled={submitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>{editingTask ? "Update Task" : "Create Task"}</>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
