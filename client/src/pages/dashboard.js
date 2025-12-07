@@ -11,6 +11,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [deleting, setDeleting] = useState(null);
   
   // Modal state
@@ -45,6 +47,7 @@ export default function Dashboard() {
       try {
         const filters = {};
         if (statusFilter) filters.status = statusFilter;
+        if (priorityFilter) filters.priority = priorityFilter;
         if (searchQuery) filters.search = searchQuery;
 
         const data = await getTasks(filters);
@@ -60,7 +63,7 @@ export default function Dashboard() {
     };
 
     fetchTasks();
-  }, [user, statusFilter, searchQuery]);
+  }, [user, statusFilter, priorityFilter, searchQuery]);
 
   // Handle logout
   const handleLogout = () => {
@@ -168,6 +171,36 @@ export default function Dashboard() {
     }
   };
 
+  // Sort and filter tasks
+  const getSortedTasks = () => {
+    let sortedTasks = [...tasks];
+
+    // Sort based on selected option
+    switch (sortBy) {
+      case "newest":
+        sortedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "oldest":
+        sortedTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "dueDate":
+        sortedTasks.sort((a, b) => {
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        });
+        break;
+      case "priority":
+        const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+        sortedTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+        break;
+      default:
+        break;
+    }
+
+    return sortedTasks;
+  };
+
   // Get priority badge color
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -265,6 +298,30 @@ export default function Dashboard() {
               <option value="Done">Done</option>
             </select>
 
+            {/* Priority Filter */}
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="">All Priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+
+            {/* Sort By */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="dueDate">Due Date</option>
+              <option value="priority">Priority</option>
+            </select>
+
             {/* Add Task Button */}
             <button 
               onClick={handleCreateTask}
@@ -302,7 +359,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {tasks.map((task) => (
+                {getSortedTasks().map((task) => (
                   <div
                     key={task.id}
                     className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
