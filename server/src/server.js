@@ -92,11 +92,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🌐 CORS enabled for: ${process.env.CLIENT_URL || "localhost:3000"}`);
-});
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`🌐 CORS enabled for: ${process.env.CLIENT_URL || "localhost:3000"}`);
+  });
+}
 
 export default app;
