@@ -88,6 +88,17 @@ export default function Dashboard() {
     }
   };
 
+  // Handle quick status change
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      const updatedTask = await updateTask(taskId, { status: newStatus });
+      setTasks(tasks.map((task) => (task.id === taskId ? updatedTask : task)));
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      alert("Failed to update task status. Please try again.");
+    }
+  };
+
   // Open modal for creating new task
   const handleCreateTask = () => {
     setEditingTask(null);
@@ -229,6 +240,14 @@ export default function Dashboard() {
     }
   };
 
+  // Get minimum date (1 month ago from today)
+  const getMinDate = () => {
+    const today = new Date();
+    const oneMonthAgo = new Date(today);
+    oneMonthAgo.setMonth(today.getMonth() - 1);
+    return oneMonthAgo.toISOString().split("T")[0];
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -367,12 +386,21 @@ export default function Dashboard() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{task.title}</h3>
                       {task.description && <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{task.description}</p>}
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 items-center">
                         {/* Priority Badge */}
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>{task.priority} Priority</span>
 
-                        {/* Status Badge */}
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>{task.status}</span>
+                        {/* Status Dropdown */}
+                        <select
+                          value={task.status}
+                          onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer focus:ring-2 focus:ring-blue-500 ${getStatusColor(task.status)}`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <option value="To Do">To Do</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Done">Done</option>
+                        </select>
 
                         {/* Due Date */}
                         {task.dueDate && (
@@ -515,8 +543,12 @@ export default function Dashboard() {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleInputChange}
+                  min={getMinDate()}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Dates older than 1 month are not available
+                </p>
               </div>
 
               {/* Modal Footer */}
