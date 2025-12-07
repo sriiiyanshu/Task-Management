@@ -1,14 +1,48 @@
-# Task Management Application
+# Task Tracker 📝
 
-A full-stack task management application built with Next.js, Express, and PostgreSQL, featuring Google OAuth and traditional email/password authentication with seamless account linking.
+> **A modern, full-stack task management application to help you stay organized and productive**
 
-![Tech Stack](https://img.shields.io/badge/Next.js-16.0.7-black?style=flat-square&logo=next.js)
-![Express](https://img.shields.io/badge/Express-4.18.2-green?style=flat-square&logo=express)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue?style=flat-square&logo=postgresql)
-![Prisma](https://img.shields.io/badge/Prisma-5.7.1-purple?style=flat-square&logo=prisma)
+<div align="center">
+
+### 🚀 [Live Demo](https://task-management-amber-alpha.vercel.app/login)
+
+[![Next.js](https://img.shields.io/badge/Next.js-16.0.7-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Express](https://img.shields.io/badge/Express-4.18.2-green?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue?style=for-the-badge&logo=postgresql)](https://neon.tech/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.22.0-purple?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+
+</div>
+
+---
+
+## 👋 Welcome!
+
+Task Tracker is a feature-rich task management application that helps you organize your work efficiently. Built with modern web technologies, it offers a seamless experience for managing tasks with flexible authentication options and real-time updates.
+
+---
+
+## 💡 About This Project
+
+This full-stack application was developed as part of a **hiring assignment** to demonstrate proficiency in modern web development practices. The project showcases:
+
+- **Full-Stack Development**: Separate client (Next.js) and server (Express) architecture with RESTful API communication
+- **Modern Tech Stack**: Latest versions of Next.js 16, React 19, Express, PostgreSQL, and Prisma ORM
+- **Authentication Mastery**: Dual authentication system with Google OAuth 2.0 and traditional email/password login
+- **Cloud Deployment**: Production-ready deployment on Vercel (frontend) and Google App Engine (backend)
+- **AI-Assisted Development**: Transparent use of AI tools for faster development and learning
+
+### 🎯 Key Highlights
+
+- ✨ **30+ comprehensive test cases** ensuring code quality and reliability
+- 🔐 **Innovative account linking** that seamlessly connects OAuth and email accounts
+- 📱 **Responsive design** that works beautifully on all devices
+- 🚀 **Production-ready** with proper security, error handling, and CORS configuration
+
+---
 
 ## 📋 Table of Contents
 
+- [About This Project](#-about-this-project)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [AI Usage Statement](#-ai-usage-statement)
@@ -21,7 +55,6 @@ A full-stack task management application built with Next.js, Express, and Postgr
 - [Deployment](#-deployment)
 - [API Documentation](#-api-documentation)
 - [Project Structure](#-project-structure)
-- [Contributing](#-contributing)
 - [License](#-license)
 
 ---
@@ -108,7 +141,7 @@ A full-stack task management application built with Next.js, Express, and Postgr
 ### AI Tools Used
 
 - **GitHub Copilot**: Code completion, debugging assistance, and implementation suggestions
-- **ChatGPT/Claude**: Architecture planning, documentation generation, and problem-solving
+- **Google Gemini**: Architecture planning, documentation generation, and problem-solving
 
 ### AI Contribution Details
 
@@ -182,15 +215,6 @@ Through AI-assisted development, I learned:
 - Next.js Pages Router patterns
 - Comprehensive testing strategies
 - Deployment to cloud platforms (Vercel, Google App Engine)
-
-### AI Transparency
-
-**Why disclose AI usage?**
-
-- Honesty and transparency in the hiring process
-- Demonstrates ability to leverage modern development tools
-- Shows efficient problem-solving approach
-- Highlights understanding of when to use AI vs. human judgment
 
 **Skills demonstrated despite AI usage:**
 
@@ -487,8 +511,6 @@ Time:        ~0.5s
    - Set `NEXT_PUBLIC_API_URL` environment variable
    - Deploy
 
-**Detailed Instructions:** See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-
 ---
 
 ## 📚 API Documentation
@@ -676,54 +698,22 @@ task-management/
 │   ├── .gcloudignore
 │   └── .env.example
 │
-├── DEPLOYMENT_GUIDE.md          # Deployment instructions
-├── ACCOUNT_LINKING_GUIDE.md     # Account linking docs
-├── TESTING_DOCUMENTATION.md     # Testing guide
 ├── README.md                    # This file
 └── .gitignore
 ```
 
----
-
-## 🤝 Contributing
-
-This is a personal project for a hiring assignment. Contributions are not currently accepted, but feel free to fork and modify for your own use.
 
 ---
 
 ## 📄 License
 
-This project is created for educational and demonstration purposes as part of a hiring assignment.
+This project is created for **educational and demonstration purposes** as part of a hiring assignment. Feel free to use the code for learning, but please credit appropriately if you use substantial portions.
 
 ---
 
-## 🙏 Acknowledgments
+- 🚀 [Live Application](https://task-management-amber-alpha.vercel.app/login)
 
-- **AI Tools**: GitHub Copilot, ChatGPT for development assistance
-- **Libraries**: Thanks to all open-source library maintainers
-- **Inspiration**: Modern task management applications
 
----
+_Last Updated: 7 December 2025_
 
-## 📞 Contact
-
-For questions about this project:
-
-- **GitHub**: [Your GitHub Profile]
-- **Email**: [Your Email]
-- **LinkedIn**: [Your LinkedIn]
-
----
-
-## 🔗 Quick Links
-
-- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
-- [Account Linking Documentation](./ACCOUNT_LINKING_GUIDE.md)
-- [Testing Documentation](./TESTING_DOCUMENTATION.md)
-- [API Documentation](#-api-documentation)
-
----
-
-**Built with ❤️ using AI-assisted development**
-
-_Last Updated: December 7, 2025_
+</div>
