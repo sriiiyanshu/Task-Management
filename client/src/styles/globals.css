@@ -4,7 +4,7 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
-  background-color: rgb(34, 34, 34);
+  background-color: rgb(0, 0, 0);
   background-attachment: fixed;
   background-size: cover;
 }
