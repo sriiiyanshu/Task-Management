@@ -86,8 +86,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="bg-white/95 backdrop-blur-sm shadow-2xl rounded-2xl p-8 w-full max-w-md border border-gray-200">
         {/* Logo/Title */}
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Task Tracker</h1>
