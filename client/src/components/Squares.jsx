@@ -1,13 +1,6 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 
-const Squares = ({
-  direction = 'right',
-  speed = 1,
-  borderColor = '#999',
-  squareSize = 40,
-  hoverFillColor = '#222',
-  className = ''
-}) => {
+const Squares = ({ direction = "right", speed = 1, borderColor = "#999", squareSize = 40, hoverFillColor = "#222", className = "" }) => {
   const canvasRef = useRef(null);
   const requestRef = useRef(null);
   const numSquaresX = useRef();
@@ -17,7 +10,7 @@ const Squares = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
 
     const resizeCanvas = () => {
       canvas.width = canvas.offsetWidth;
@@ -26,7 +19,7 @@ const Squares = ({
       numSquaresY.current = Math.ceil(canvas.height / squareSize) + 1;
     };
 
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
     const drawGrid = () => {
@@ -40,11 +33,7 @@ const Squares = ({
           const squareX = x - (gridOffset.current.x % squareSize);
           const squareY = y - (gridOffset.current.y % squareSize);
 
-          if (
-            hoveredSquare.current &&
-            Math.floor((x - startX) / squareSize) === hoveredSquare.current.x &&
-            Math.floor((y - startY) / squareSize) === hoveredSquare.current.y
-          ) {
+          if (hoveredSquare.current && Math.floor((x - startX) / squareSize) === hoveredSquare.current.x && Math.floor((y - startY) / squareSize) === hoveredSquare.current.y) {
             ctx.fillStyle = hoverFillColor;
             ctx.fillRect(squareX, squareY, squareSize, squareSize);
           }
@@ -54,15 +43,8 @@ const Squares = ({
         }
       }
 
-      const gradient = ctx.createRadialGradient(
-        canvas.width / 2,
-        canvas.height / 2,
-        0,
-        canvas.width / 2,
-        canvas.height / 2,
-        Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2
-      );
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2);
+      gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -71,19 +53,19 @@ const Squares = ({
     const updateAnimation = () => {
       const effectiveSpeed = Math.max(speed, 0.1);
       switch (direction) {
-        case 'right':
+        case "right":
           gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
           break;
-        case 'left':
+        case "left":
           gridOffset.current.x = (gridOffset.current.x + effectiveSpeed + squareSize) % squareSize;
           break;
-        case 'up':
+        case "up":
           gridOffset.current.y = (gridOffset.current.y + effectiveSpeed + squareSize) % squareSize;
           break;
-        case 'down':
+        case "down":
           gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
           break;
-        case 'diagonal':
+        case "diagonal":
           gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
           gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
           break;
@@ -95,7 +77,7 @@ const Squares = ({
       requestRef.current = requestAnimationFrame(updateAnimation);
     };
 
-    const handleMouseMove = event => {
+    const handleMouseMove = (event) => {
       const rect = canvas.getBoundingClientRect();
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
@@ -106,11 +88,7 @@ const Squares = ({
       const hoveredSquareX = Math.floor((mouseX + gridOffset.current.x - startX) / squareSize);
       const hoveredSquareY = Math.floor((mouseY + gridOffset.current.y - startY) / squareSize);
 
-      if (
-        !hoveredSquare.current ||
-        hoveredSquare.current.x !== hoveredSquareX ||
-        hoveredSquare.current.y !== hoveredSquareY
-      ) {
+      if (!hoveredSquare.current || hoveredSquare.current.x !== hoveredSquareX || hoveredSquare.current.y !== hoveredSquareY) {
         hoveredSquare.current = { x: hoveredSquareX, y: hoveredSquareY };
       }
     };
@@ -119,28 +97,28 @@ const Squares = ({
       hoveredSquare.current = null;
     };
 
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
 
     requestRef.current = requestAnimationFrame(updateAnimation);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(requestRef.current);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize]);
 
   return (
-    <canvas 
-      ref={canvasRef} 
+    <canvas
+      ref={canvasRef}
       className={className}
       style={{
-        width: '100%',
-        height: '100%',
-        border: 'none',
-        display: 'block'
+        width: "100%",
+        height: "100%",
+        border: "none",
+        display: "block",
       }}
     />
   );

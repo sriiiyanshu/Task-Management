@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Task Manager</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="card">
+    <h2 style="text-align:center">Task Tracker</h2>
+
+    <div class="tabs">
+      <button id="loginTab" class="active">Login</button>
+      <button id="signupTab">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="active" method="POST" action="/login">
+      <label>Username or Email</label>
+      <input type="text" name="username" required>
+
+      <label>Password</label>
+      <input type="password" name="password" required>
+
+      <button class="submit-btn" type="submit">Login</button>
+    </form>
+
+    <!-- SIGN UP FORM -->
+    <form id="signupForm" method="POST" action="/signup">
+      <label>Username</label>
+      <input type="text" name="username" required>
+
+      <label>Email</label>
+      <input type="email" name="email" required>
+
+      <label>Password</label>
+      <input id="password" type="password" name="password" required>
+
+      <label>Confirm Password</label>
+      <input id="password2" type="password" name="password2" required>
+
+      <p id="error" style="color:red; display:none; font-size:14px;">
+  Passwords do not match
+</p>
+
+      <button class="submit-btn" type="submit">Create Account</button>
+        </form>
+
+        <div style="text-align: center; margin: 15px 0; color: #888;">OR</div>
+
+        <a href="/auth/google" class="submit-btn" style="background-color: #db4437; text-decoration: none; display: block; text-align: center; padding: 10px;">
+      Sign In with Google
+        </a>
+      </div>
+        </div>
+      </div>
+
+<script>
+  const loginTab = document.getElementById("loginTab");
+  const signupTab = document.getElementById("signupTab");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+
+  const password = document.getElementById("password");
+  const password2 = document.getElementById("password2");
+  const error = document.getElementById("error");
+
+  // Tab switching
+  loginTab.onclick = () => {
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+    loginForm.classList.add("active");
+    signupForm.classList.remove("active");
+  };
+
+  signupTab.onclick = () => {
+    signupTab.classList.add("active");
+    loginTab.classList.remove("active");
+    signupForm.classList.add("active");
+    loginForm.classList.remove("active");
+  };
+
+  // Prevent submit if passwords don't match
+  signupForm.addEventListener("submit", (e) => {
+    if (password.value !== password2.value) {
+      e.preventDefault();
+      error.style.display = "block";
+      password2.focus();
+    } else {
+      error.style.display = "none";
+    }
+  });
+
+  // Hide error when user fixes password
+  password2.addEventListener("input", () => {
+    if (password.value === password2.value) {
+      error.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>
